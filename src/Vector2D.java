@@ -5,11 +5,11 @@ public class Vector2D {
 	double x;
 	double y;
 	
-	Vector2D() {
+	public Vector2D() {
 		x = 0;
 		y = 0;
 	}
-	Vector2D(double x, double y) {
+	public Vector2D(double x, double y) {
 		this.x = x;
 		this.y = y;
 	}
