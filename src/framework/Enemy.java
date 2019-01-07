@@ -1,5 +1,6 @@
+package framework;
 
-public class Enemy extends Alive{
+public class Enemy extends Article{
 
     private int health;
     private int damage;

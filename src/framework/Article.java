@@ -1,4 +1,6 @@
-public abstract class Alive {
+package framework;
+
+public abstract class Article {
 
     private String name;
     private Vector2D position = new Vector2D();
@@ -9,7 +11,7 @@ public abstract class Alive {
     // quad tree variable
 
 
-    public Alive(){
+    public Article(){
         this.invulnerable = false;
 
     }
