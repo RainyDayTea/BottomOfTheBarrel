@@ -1,3 +1,4 @@
+
 /**
  * Container class for a quadtree. Used for hitboxes and collision detection.
  *
@@ -5,6 +6,7 @@
  *
  * @author Jake Zhao
  */
+
 public class QuadTree {
 
 	private QuadTreeNode root;

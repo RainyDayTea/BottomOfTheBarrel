@@ -1,3 +1,4 @@
+package framework;
 public class Rectangle {
 
 	Vector2D pos;
