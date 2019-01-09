@@ -1,18 +1,51 @@
 package framework;
 
+
 public abstract class Article {
 
     private String name;
     private Vector2D position = new Vector2D();
     private Vector2D speed = new Vector2D();
     private boolean invulnerable;
-    // a direction variable
-    // a hitbox variable
-    // quad tree variable
+    private int vectorDirection;
 
 
-    public Article(){
-        this.invulnerable = false;
+    private Article() {
+        this.setInvulnerable(false);
+        this.setName(name);
+        this.setPosition(position);
+        this.setSpeed(speed);
+    }
+    public void setName(String name){
+        this.name = name;
+    }
 
+
+    public String getName() {
+        return name;
+    }
+
+    public Vector2D getPosition() {
+        return position;
+    }
+
+    public void setPosition(Vector2D position) {
+        this.position = position;
+    }
+
+    public Vector2D getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(Vector2D speed) {
+        this.speed = speed;
+    }
+
+    public boolean isInvulnerable() {
+        return invulnerable;
+    }
+
+    public void setInvulnerable(boolean invulnerable) {
+        this.invulnerable = invulnerable;
     }
 }
