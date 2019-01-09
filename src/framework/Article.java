@@ -15,6 +15,7 @@ public abstract class Article {
         this.setName(name);
         this.setPosition(position);
         this.setSpeed(speed);
+        this.setVectorDirection(vectorDirection);
     }
     public void setName(String name){
         this.name = name;
@@ -47,5 +48,13 @@ public abstract class Article {
 
     public void setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
+    }
+
+    public int getVectorDirection() {
+        return vectorDirection;
+    }
+
+    public void setVectorDirection(int vectorDirection) {
+        this.vectorDirection = vectorDirection;
     }
 }
