@@ -10,7 +10,7 @@ public abstract class Article {
     private int vectorDirection;
 
 
-    private Article() {
+    public Article() {
         this.setInvulnerable(false);
         this.setName(name);
         this.setPosition(position);
