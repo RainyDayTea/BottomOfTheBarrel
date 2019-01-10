@@ -1,4 +1,4 @@
-package framework;
+package framework.geom;
 public class Matrix2D {
 	
 	double m00, m01, m10, m11;

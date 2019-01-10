@@ -1,5 +1,4 @@
-package framework;
-import java.util.Vector;
+package framework.geom;
 
 public class Vector2D {
 	

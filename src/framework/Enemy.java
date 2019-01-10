@@ -1,5 +1,7 @@
 package framework;
 
+import framework.geom.Vector2D;
+
 public class Enemy extends Article{
 
     private int health;

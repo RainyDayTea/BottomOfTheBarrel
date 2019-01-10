@@ -1,4 +1,4 @@
-package framework;
+package framework.geom;
 public class Rectangle {
 
 	Vector2D pos;

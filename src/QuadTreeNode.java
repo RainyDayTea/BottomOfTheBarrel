@@ -1,4 +1,4 @@
-import framework.Vector2D;
+import framework.geom.Vector2D;
 import java.util.ArrayList;
 
 /**

@@ -1,5 +1,7 @@
 package framework;
 
+import framework.geom.Vector2D;
+
 public abstract class Article {
 
     private String name;
