@@ -20,9 +20,10 @@ class GameFrame extends JFrame {
 	//class variable (non-static)
 	static double x, y;
 	static GameAreaPanel gamePanel;
+	// The time waited between calls of step(), in milliseconds.
+	public static final int STEP_DELAY = 16;
 
 
-	//Constructor - this runs first
 	GameFrame() {
 
 		super("My Game");
@@ -46,18 +47,20 @@ class GameFrame extends JFrame {
 		this.setVisible(true);
 
 		//Start the game loop in a separate thread
-		Thread t = new Thread(new Runnable() { public void run() { animate(); }}); //start the gameLoop
+		Thread t = new Thread(new Runnable() { public void run() { step(); }}); //start the gameLoop
 		t.start();
 
 	} //End of Constructor
 
-	//the main gameloop - this is where the game state is updated
-	public void animate() {
+	// The method to be called every frame
+	public void step() {
 
-		while(true){
-			this.x = (Math.random()*1024);  //update coords
-			this.y = (Math.random()*768);
-			try{ Thread.sleep(500);} catch (Exception exc){}  //delay
+		while (true) {
+			this.x = (Math.random()*this.getWidth());  //update coords
+			this.y = (Math.random()*this.getHeight());
+			try {
+				Thread.sleep(STEP_DELAY);
+			} catch (Exception exc) {}  //delay
 			this.repaint();
 		}
 	}
@@ -68,11 +71,17 @@ class GameFrame extends JFrame {
 	private class GameAreaPanel extends JPanel {
 		public void paintComponent(Graphics g) {
 			super.paintComponent(g); //required
+			setBackground(Color.BLACK);
 			setDoubleBuffered(true);
 			g.setColor(Color.BLUE); //There are many graphics commands that Java can use
 			g.fillRect((int)x, (int)y, 50, 50); //notice the x,y variables that we control from our animate method
 
 		}
+	}
+
+	/*  ============ MAIN METHOD ==============  */
+	public static void main(String[] args) {
+		GameFrame game = new GameFrame();
 	}
 
 }
