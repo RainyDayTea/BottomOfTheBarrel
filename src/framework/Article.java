@@ -8,7 +8,7 @@ public abstract class Article {
     private Vector2D speed = new Vector2D();
     private boolean invulnerable;
     private int vectorDirection;
-
+    private Statistics stats = new Statistics(0,0,0,0);
 
     public Article() {
         this.setInvulnerable(false);
@@ -16,6 +16,7 @@ public abstract class Article {
         this.setPosition(position);
         this.setSpeed(speed);
         this.setVectorDirection(vectorDirection);
+        this.setStats(stats);
     }
     public void setName(String name){
         this.name = name;
@@ -56,5 +57,13 @@ public abstract class Article {
 
     public void setVectorDirection(int vectorDirection) {
         this.vectorDirection = vectorDirection;
+    }
+
+    public Statistics getStats() {
+        return stats;
+    }
+
+    public void setStats(Statistics stats) {
+        this.stats = stats;
     }
 }
