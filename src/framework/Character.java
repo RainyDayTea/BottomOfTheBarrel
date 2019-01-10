@@ -2,7 +2,7 @@ package framework;
 
 import framework.geom.*;
 
-public abstract class Article {
+public abstract class Character {
 
     private String name;
     private Vector2D position = new Vector2D();
@@ -11,7 +11,7 @@ public abstract class Article {
     private int vectorDirection;
     private Statistics stats = new Statistics(0,0,0,0);
 
-    public Article() {
+    public Character() {
         this.setInvulnerable(false);
         this.setName(name);
         this.setPosition(position);
