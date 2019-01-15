@@ -2,8 +2,9 @@ package enemy;
 
 import framework.Character;
 
-public abstract class Enemy extends Character{
 
+public abstract class Enemy extends Character{
+    // hitbox, hurtbox
     public Enemy() {
 
     }

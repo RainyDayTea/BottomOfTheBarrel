@@ -4,6 +4,8 @@ import enemy.Enemy;
 
 public class Loot extends Enemy {
 
+    private String[] dropSprites = new String[4];
+
     private int[] dropTable = new int[4];
 
     private int Drop(int[] dropTable){
@@ -26,5 +28,8 @@ public class Loot extends Enemy {
         return droppedItem;
     }
 
+    private void Items () {
+        
+    }
 
 }
