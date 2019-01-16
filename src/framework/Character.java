@@ -13,7 +13,7 @@ public abstract class Character extends RenderedObject implements Collidable {
     private Vector2D speed = new Vector2D();
     private boolean invulnerable;
     private int vectorDirection;
-    private Statistics stats = new Statistics(0,0,0,0);
+    private Statistics stats = new Statistics(0,0,0);
     public static final BufferedImage defaultTexture = null;
 
     public Character(String name, Vector2D position, Vector2D speed, Statistics stats, Shape hitbox) {
