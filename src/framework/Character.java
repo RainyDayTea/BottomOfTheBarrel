@@ -11,11 +11,15 @@ public abstract class Character extends RenderedObject implements Collidable {
     private String name;
     private Shape hitbox;
     private Vector2D speed = new Vector2D();
+    private Vector2D position = new Vector2D();
     private boolean invulnerable;
     private int vectorDirection;
     private Statistics stats = new Statistics(0,0,0);
     public static final BufferedImage defaultTexture = null;
 
+    public Character(){
+
+    }
     public Character(String name, Vector2D position, Vector2D speed, Statistics stats, Shape hitbox) {
         super(defaultTexture, new Rectangle(position, 100, 100), true);
         this.setInvulnerable(false);
@@ -68,5 +72,13 @@ public abstract class Character extends RenderedObject implements Collidable {
 
     public void setStats(Statistics stats) {
         this.stats = stats;
+    }
+
+    public Vector2D getPosition() {
+        return position;
+    }
+
+    public void setPosition(Vector2D position) {
+        this.position = position;
     }
 }

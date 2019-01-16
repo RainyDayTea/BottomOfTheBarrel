@@ -11,6 +11,10 @@ public abstract class RenderedObject {
 	private Rectangle renderBox;
 	private boolean isVisible;
 
+	public RenderedObject(){
+
+	}
+
 	public RenderedObject(BufferedImage texture, Rectangle renderBox, boolean isVisible) {
 		this.renderBox = renderBox;
 		this.texture = texture;
