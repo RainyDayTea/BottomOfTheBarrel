@@ -1,10 +1,12 @@
 package enemy;
 
 import framework.Character;
+import framework.geom.Circle;
 
 
 public abstract class Enemy extends Character{
-    // hitbox, hurtbox
+
+    private Circle hitbox = new Circle(getPosition());
     public Enemy() {
 
     }

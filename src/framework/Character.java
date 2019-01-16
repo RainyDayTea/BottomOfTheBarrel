@@ -9,7 +9,7 @@ public abstract class Character {
     private Vector2D speed = new Vector2D();
     private boolean invulnerable;
     private int vectorDirection;
-    private Statistics stats = new Statistics(0,0,0,0);
+    private Statistics stats = new Statistics(0,0,0);
 
     public Character() {
         this.setInvulnerable(false);
