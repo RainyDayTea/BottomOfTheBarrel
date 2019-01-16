@@ -9,20 +9,14 @@ package game;
 //Graphics &GUI imports
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import java.awt.Toolkit;
-import java.awt.Graphics;
-import java.awt.Color;
+import java.awt.*;
+import java.util.ArrayList;
 // Project framework import
 import framework.*;
 
 class GameFrame extends JFrame {
 
-	//class variable (non-static)
-	static double x, y;
 	static GameAreaPanel gamePanel;
-	// The time waited between calls of step(), in milliseconds.
-	public static final int STEP_DELAY = 16;
-
 
 	GameFrame() {
 
@@ -56,26 +50,10 @@ class GameFrame extends JFrame {
 	public void step() {
 
 		while (true) {
-			this.x = (Math.random()*this.getWidth());  //update coords
-			this.y = (Math.random()*this.getHeight());
-			try {
-				Thread.sleep(STEP_DELAY);
-			} catch (Exception exc) {}  //delay
 			this.repaint();
-		}
-	}
-
-	/** --------- INNER CLASSES ------------- **/
-
-	// Inner class for the the game area - This is where all the drawing of the screen occurs
-	private class GameAreaPanel extends JPanel {
-		public void paintComponent(Graphics g) {
-			super.paintComponent(g); //required
-			setBackground(Color.BLACK);
-			setDoubleBuffered(true);
-			g.setColor(Color.BLUE); //There are many graphics commands that Java can use
-			g.fillRect((int)x, (int)y, 50, 50); //notice the x,y variables that we control from our animate method
-
+			try {
+				Thread.sleep(GameAreaPanel.STEP_DELAY);
+			} catch (Exception exc) {}  //delay
 		}
 	}
 

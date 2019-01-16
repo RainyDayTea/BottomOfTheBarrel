@@ -5,8 +5,8 @@ package framework.geom;
  */
 public class Vector2D {
 	
-	double x;
-	double y;
+	public double x;
+	public double y;
 
 	public Vector2D() {
 		x = 0;
@@ -20,19 +20,22 @@ public class Vector2D {
 		this.set(vec);
 	}
 
-	public void add(Vector2D other) {
+	public Vector2D add(Vector2D other) {
 		this.x += other.x;
 		this.y += other.y;
+		return this;
 	}
 
-	public void sub(Vector2D other) {
+	public Vector2D sub(Vector2D other) {
 		this.x -= other.x;
 		this.y -= other.y;
+		return this;
 	}
 
-	public void scale(double scalar) {
+	public Vector2D scale(double scalar) {
 		this.x *= scalar;
 		this.y *= scalar;
+		return this;
 	}
 
 	public void set(Vector2D vec) {

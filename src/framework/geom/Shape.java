@@ -8,7 +8,7 @@ package framework.geom;
  */
 public abstract class Shape {
 
-	Vector2D pos;
+	public Vector2D pos;
 
 	public abstract double getArea();
 

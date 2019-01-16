@@ -7,7 +7,7 @@ package framework.geom;
  */
 public class Rectangle extends Shape {
 
-	Vector2D pos2;
+	public Vector2D pos2;
 
 	/**
 	 * Constructs a rectangle using two points.

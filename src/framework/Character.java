@@ -2,39 +2,40 @@ package framework;
 
 import framework.geom.*;
 
-public abstract class Character {
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+
+public abstract class Character extends RenderedObject implements Collidable {
 
     private String name;
-    private Vector2D position = new Vector2D();
+    private Shape hitbox;
     private Vector2D speed = new Vector2D();
     private boolean invulnerable;
     private int vectorDirection;
     private Statistics stats = new Statistics(0,0,0,0);
+    public static final BufferedImage defaultTexture = null;
 
-    public Character() {
+    public Character(String name, Vector2D position, Vector2D speed, Statistics stats, Shape hitbox) {
+        super(defaultTexture, new Rectangle(position, 100, 100), true);
         this.setInvulnerable(false);
         this.setName(name);
-        this.setPosition(position);
         this.setSpeed(speed);
         this.setVectorDirection(vectorDirection);
         this.setStats(stats);
+        this.setHitbox(hitbox);
     }
     public void setName(String name){
         this.name = name;
     }
 
-
     public String getName() {
         return name;
     }
 
-    public Vector2D getPosition() {
-        return position;
-    }
+    public Shape getHitbox() { return hitbox; }
 
-    public void setPosition(Vector2D position) {
-        this.position = position;
-    }
+    public void setHitbox(Shape hitbox) { this.hitbox = hitbox; }
 
     public Vector2D getSpeed() {
         return speed;
