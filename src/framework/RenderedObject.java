@@ -11,6 +11,8 @@ import java.awt.image.BufferedImage;
  * is a rectangular shape that the texture will attempt to fit into when
  * the object is drawn.
  *
+ *
+ *
  * @author Jake Zhao
  */
 public abstract class RenderedObject {
@@ -21,6 +23,10 @@ public abstract class RenderedObject {
 	private Rectangle renderBox;
 	// Toggles if the texture is drawn.
 	private boolean isVisible;
+	// The rotation of the texture, in radians.
+	// Specifically, this is the angle measured from standard position.
+	// When the texture is drawn, the rotation will occur about the center of the render box.
+	private double rotation;
 
 	/**
 	 * Constructs a RenderedObject with a given texture and a render box set to
@@ -92,5 +98,21 @@ public abstract class RenderedObject {
 	 */
 	public void setVisible(boolean visible) {
 		isVisible = visible;
+	}
+
+	/**
+	 * Gets the object's rotation.
+	 * @return The angle to be rotated, in radians from standard position.
+	 */
+	public double getRotation() {
+		return rotation;
+	}
+
+	/**
+	 * Sets the object's rotation.
+	 * @param rotation The new angle, in radians.
+	 */
+	public void setRotation(double rotation) {
+		this.rotation = rotation;
 	}
 }
