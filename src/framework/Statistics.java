@@ -2,12 +2,12 @@ package framework;
 
 public class Statistics {
     private int maxHP;
-    private int currHP;
+    private int currHP = maxHP;
     private int damage;
     private int speed;
 
-    public Statistics(int maxHP, int currHP, int damage, int speed){
-        this.setCurrHP(currHP);
+    public Statistics(int maxHP, int damage, int speed){
+        this.setCurrHP(maxHP);
         this.setDamage(damage);
         this.setMaxHP(maxHP);
         this.setSpeed(speed);
