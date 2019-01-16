@@ -23,7 +23,6 @@ public abstract class Character {
         this.name = name;
     }
 
-
     public String getName() {
         return name;
     }
@@ -48,8 +47,9 @@ public abstract class Character {
         return invulnerable;
     }
 
-    public void setInvulnerable(boolean invulnerable) {
+    public boolean setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
+        return this.invulnerable;
     }
 
     public int getVectorDirection() {
