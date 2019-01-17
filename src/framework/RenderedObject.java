@@ -1,6 +1,9 @@
 package framework;
 
 import framework.geom.Rectangle;
+import framework.geom.Vector2D;
+
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
@@ -50,6 +53,19 @@ public abstract class RenderedObject {
 		this.texture = texture;
 		this.renderBox = renderBox;
 		this.isVisible = isVisible;
+	}
+
+	/**
+	 *
+	 * @param g
+	 */
+	public void draw(Graphics g) {
+		if (texture == null) {
+			Vector2D size = renderBox.size();
+			g.drawRect((int) renderBox.pos.x, (int) renderBox.pos.y, (int) size.x, (int) size.y);
+		} else {
+
+		}
 	}
 
 	/**

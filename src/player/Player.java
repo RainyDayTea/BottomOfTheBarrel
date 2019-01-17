@@ -3,6 +3,8 @@ package player;
 import framework.Statistics;
 import framework.geom.Circle;
 import framework.Character;
+import framework.geom.Shape;
+import framework.geom.Vector2D;
 
 import java.awt.image.BufferedImage;
 
@@ -15,7 +17,8 @@ public class Player extends Character {
     private String weapon;
 
 
-    public Player(int difficulty){
+    public Player(Vector2D position, Vector2D speed, Circle hitbox, int difficulty){
+        super(position, speed, new Statistics(0, 0 ,0), hitbox);
         if (difficulty == 1) {
             this.setStats(new Statistics(6,1,0));
         }
@@ -28,7 +31,7 @@ public class Player extends Character {
         this.hitbox = new Circle(getPosition());
         this.speed = 0;
     }
-    public boolean Rolling(int characterState){
+    public boolean rolling(int characterState){
         boolean invulnerable = false;
          if (characterState == 2){
             invulnerable = true;
@@ -36,7 +39,7 @@ public class Player extends Character {
         return invulnerable;
     }
     public boolean Invulnerable(int characterState){
-        if (Rolling(characterState) == true){
+        if (rolling(characterState)){
             this.setInvulnerable(isInvulnerable());
         }
         return isInvulnerable();

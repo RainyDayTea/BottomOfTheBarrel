@@ -1,8 +1,6 @@
 package item;
 
-import enemy.Enemy;
-
-public class Loot extends Enemy {
+public class Loot {
 
     private String[] dropSprites = new String[4];
 

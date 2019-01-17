@@ -17,18 +17,16 @@ public abstract class Character extends RenderedObject implements Collidable {
     private Statistics stats = new Statistics(0,0,0);
     public static final BufferedImage defaultTexture = null;
 
-    public Character(){
-
-    }
-    public Character(String name, Vector2D position, Vector2D speed, Statistics stats, Shape hitbox) {
+    public Character(Vector2D position, Vector2D speed, Statistics stats, Shape hitbox) {
         super(defaultTexture, new Rectangle(position, 100, 100), true);
         this.setInvulnerable(false);
-        this.setName(name);
+        this.setName(this.hashCode() + "");
         this.setSpeed(speed);
         this.setVectorDirection(vectorDirection);
         this.setStats(stats);
         this.setHitbox(hitbox);
     }
+
     public void setName(String name){
         this.name = name;
     }
