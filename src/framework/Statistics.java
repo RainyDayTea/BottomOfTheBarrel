@@ -4,13 +4,17 @@ public class Statistics {
     private int maxHP;
     private int currHP = maxHP;
     private int damage;
-    private int speed;
 
-    public Statistics(int maxHP, int damage, int speed){
+    public Statistics(int maxHP, int damage){
         this.setCurrHP(maxHP);
         this.setDamage(damage);
         this.setMaxHP(maxHP);
-        this.setSpeed(speed);
+    }
+
+    public Statistics(){
+        this.setCurrHP(0);
+        this.setDamage(0);
+        this.setMaxHP(0);
     }
 
     public int getMaxHP() {
@@ -35,13 +39,5 @@ public class Statistics {
 
     public void setDamage(int damage) {
         this.damage = damage;
-    }
-
-    public int getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(int speed) {
-        this.speed = speed;
     }
 }
