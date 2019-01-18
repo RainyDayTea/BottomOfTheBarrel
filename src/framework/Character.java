@@ -6,23 +6,18 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public abstract class Character extends RenderedObject implements Collidable {
+public abstract class Character extends MovableObject implements Collidable {
 
     private String name;
     private Shape hitbox;
-    private Vector2D speed = new Vector2D();
-    private Vector2D position = new Vector2D();
     private boolean invulnerable;
-    private int vectorDirection;
-    private Statistics stats = new Statistics(0,0,0);
+    private Statistics stats;
     public static final BufferedImage defaultTexture = null;
 
-    public Character(Vector2D position, Vector2D speed, Statistics stats, Shape hitbox) {
-        super(defaultTexture, new Rectangle(position, 100, 100), true);
+    public Character(double x, double y, int sizeX, int sizeY, Vector2D maxSpeed) {
+        super(x, y, sizeX, sizeY, maxSpeed, true);
         this.setInvulnerable(false);
         this.setName(this.hashCode() + "");
-        this.setSpeed(speed);
-        this.setVectorDirection(vectorDirection);
         this.setStats(stats);
         this.setHitbox(hitbox);
     }
@@ -39,14 +34,6 @@ public abstract class Character extends RenderedObject implements Collidable {
 
     public void setHitbox(Shape hitbox) { this.hitbox = hitbox; }
 
-    public Vector2D getSpeed() {
-        return speed;
-    }
-
-    public void setSpeed(Vector2D speed) {
-        this.speed = speed;
-    }
-
     public boolean isInvulnerable() {
         return invulnerable;
     }
@@ -54,14 +41,6 @@ public abstract class Character extends RenderedObject implements Collidable {
     public boolean setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
         return this.invulnerable;
-    }
-
-    public int getVectorDirection() {
-        return vectorDirection;
-    }
-
-    public void setVectorDirection(int vectorDirection) {
-        this.vectorDirection = vectorDirection;
     }
 
     public Statistics getStats() {
@@ -72,11 +51,4 @@ public abstract class Character extends RenderedObject implements Collidable {
         this.stats = stats;
     }
 
-    public Vector2D getPosition() {
-        return position;
-    }
-
-    public void setPosition(Vector2D position) {
-        this.position = position;
-    }
 }

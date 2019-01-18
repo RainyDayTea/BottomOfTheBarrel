@@ -25,6 +25,6 @@ public class PlayerKeyListener implements KeyListener {
 	}
 
 	public HashSet<String> getPressedKeys() {
-		return new HashSet<>(pressedKeys);
+		return pressedKeys;
 	}
 }

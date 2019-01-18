@@ -33,6 +33,11 @@ public class Rectangle extends Shape {
 		this.pos2 = new Vector2D(pos.x + sizeX, pos.y + sizeY);
 	}
 
+	public Rectangle(double x0, double y0, double x1, double y1) {
+		this.pos = new Vector2D(x0, y0);
+		this.pos2 = new Vector2D(x1, y1);
+	}
+
 	/**
 	 * Calculates the area of the rectangle.
 	 * @return The area of the rectangle.

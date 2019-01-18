@@ -19,6 +19,11 @@ public class Circle extends Shape {
 		this.radius = radius;
 	}
 
+	public Circle(double x, double y, double radius) {
+		this.pos = new Vector2D(x, y);
+		this.radius = radius;
+	}
+
 	public double getArea() {
 		return radius * radius * Math.PI;
 	}
