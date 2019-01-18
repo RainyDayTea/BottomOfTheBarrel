@@ -2,6 +2,7 @@ package framework;
 
 import framework.geom.Rectangle;
 import framework.geom.Vector2D;
+import game.GameFrame;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -59,13 +60,14 @@ public class RenderedObject {
 	 * This method is called somewhere in paintComponent() to draw the object.
 	 * @param g The JPanel's graphics object.
 	 */
-	public void draw(Graphics g) {
+	public void draw(Graphics g, Vector2D offset) {
 		// Prevents drawing if the object is invisible.
 		if (!this.isVisible) return;
 
+		Vector2D drawPos = new Vector2D(renderBox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
+		Vector2D size = renderBox.size();
 		if (texture == null) {
-			Vector2D size = renderBox.size();
-			g.drawRect((int) Math.round(renderBox.pos.x), (int) Math.round(renderBox.pos.y), (int) Math.round(size.x), (int) Math.round(size.y));
+			g.drawRect((int) Math.round(drawPos.x), (int) Math.round(drawPos.y), (int) Math.round(size.x), (int) Math.round(size.y));
 		} else {
 
 		}

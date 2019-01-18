@@ -15,7 +15,7 @@ import java.util.ArrayList;
 // Project framework import
 import framework.*;
 
-class GameFrame extends JFrame {
+public class GameFrame extends JFrame {
 
 	public static final int WIDTH = 1280;
 	public static final int HEIGHT = 720;

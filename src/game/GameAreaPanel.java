@@ -20,12 +20,11 @@ public class GameAreaPanel extends JPanel {
 	private long deltaTime = 0;
 	// The old time used to calculate deltaTime.
 	private long currTime = 0;
-
+	// The UNIX timestamp at which the game started.
 	private final long startedTime = System.nanoTime() / 1000000;
 
 	private Player player;
 	private ArrayList<RenderedObject> world;
-	private Vector2D camera;
 
 	private PlayerKeyListener keyListener;
 	private PlayerMouseListener mouseListener;
@@ -42,11 +41,16 @@ public class GameAreaPanel extends JPanel {
 
 		Vector2D playerMaxSpeed = new Vector2D(10, 10);
 
-		player = new Player(centerOfScreen.x, centerOfScreen.y, 50, 50, playerMaxSpeed);
+		player = new Player(0, 0, 50, 50, playerMaxSpeed);
 
 		// Initialize the environment and add the player to it
 		this.world = new ArrayList<>();
 		world.add(player);
+
+		for (int i = 0; i < 100; i++) {
+			RenderedObject rObj = new RenderedObject(Math.random() * GameFrame.WIDTH, Math.random() * GameFrame.HEIGHT, 50, 50, true);
+			world.add(rObj);
+		}
 	}
 
 	public void paintComponent(Graphics g) {
@@ -77,9 +81,10 @@ public class GameAreaPanel extends JPanel {
 
 		/* ----- Render objects here ---- */
 		g.setColor(Color.BLUE);
+
 		for (RenderedObject obj : world) {
 			// Draw all visible objects
-			if (obj.isVisible()) obj.draw(g);
+			if (obj.isVisible()) obj.draw(g, player.getPosition());
 			// Attempt to move all physics objects
 			if (obj instanceof MovableObject) {
 				((MovableObject) obj).move(deltaTime / GameAreaPanel.STEP_DELAY);
@@ -92,10 +97,6 @@ public class GameAreaPanel extends JPanel {
 			g.setColor(Color.MAGENTA);
 			g.drawString("Frame time: " + deltaTime + "ms", 0, 12);
 			g.drawString("Game time: " + currTime + "ms", 0, 24);
-			String buffer = "";
-			for (String str : pressedKeys) {
-				buffer += str + " ";
-			}
 			g.drawString("Pressed keys: " + pressedKeys, 0, 36);
 			g.setColor(oldColor);
 		}
