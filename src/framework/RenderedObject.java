@@ -19,7 +19,7 @@ import java.awt.image.BufferedImage;
  *
  * @author Jake Zhao
  */
-public class RenderedObject {
+public class RenderedObject implements Renderable {
 	// The texture of the object. It's recommended to set this as a pointer
 	// instead of storing the BufferedImage directly.
 	private static BufferedImage texture;

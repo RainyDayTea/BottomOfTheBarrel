@@ -4,7 +4,7 @@ package game;
  * This template can be used as reference or a starting point
  * for your final summative project
  *
- * @author Mangat
+ * @author Mangat, edited by Jake Zhao
  **/
 
 //Graphics &GUI imports
@@ -24,7 +24,7 @@ public class GameFrame extends JFrame {
 	GameFrame() {
 
 		super("BOTTOM OF THE BARREL");
-		// Set the frame to full screen
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(WIDTH, HEIGHT);
 		this.setResizable(false);
@@ -56,7 +56,7 @@ public class GameFrame extends JFrame {
 			this.repaint();
 			try {
 				Thread.sleep(GameAreaPanel.STEP_DELAY);
-			} catch (Exception exc) {}  //delay
+			} catch (Exception exc) {exc.printStackTrace();}  //delay
 		}
 	}
 

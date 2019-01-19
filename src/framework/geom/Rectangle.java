@@ -33,6 +33,13 @@ public class Rectangle extends Shape {
 		this.pos2 = new Vector2D(pos.x + sizeX, pos.y + sizeY);
 	}
 
+	/**
+	 * Constructs a rectangle using two points.
+	 * @param x0 The x-coordinate of the first point.
+	 * @param y0 The y-coordinate of the first point.
+	 * @param x1 The x-coordinate of the second point.
+	 * @param y1 The y-coordinate of the second point.
+	 */
 	public Rectangle(double x0, double y0, double x1, double y1) {
 		this.pos = new Vector2D(x0, y0);
 		this.pos2 = new Vector2D(x1, y1);

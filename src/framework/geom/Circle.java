@@ -7,7 +7,7 @@ package framework.geom;
  */
 public class Circle extends Shape {
 
-	double radius;
+	public double radius;
 
 	public Circle(Vector2D pos) {
 		this.pos = pos;
@@ -23,6 +23,8 @@ public class Circle extends Shape {
 		this.pos = new Vector2D(x, y);
 		this.radius = radius;
 	}
+
+	public Vector2D getCenter() { return pos; }
 
 	public double getArea() {
 		return radius * radius * Math.PI;
