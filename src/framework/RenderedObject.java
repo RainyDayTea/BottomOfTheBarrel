@@ -1,6 +1,8 @@
 package framework;
 
+import framework.geom.Circle;
 import framework.geom.Rectangle;
+import framework.geom.Shape;
 import framework.geom.Vector2D;
 import game.GameFrame;
 
@@ -23,54 +25,112 @@ public class RenderedObject implements Renderable {
 	// The texture of the object. It's recommended to set this as a pointer
 	// instead of storing the BufferedImage directly.
 	private static BufferedImage texture;
-	// The central position of the object.
-	private Vector2D position;
 	// The rectangle which the texture is drawn in.
 	private Rectangle renderBox;
 	// Toggles if the texture is drawn.
-	private boolean isVisible;
+	private boolean visible;
 	// The rotation of the texture, in radians.
 	// Specifically, this is the angle measured from standard position.
 	// When the texture is drawn, the rotation will occur about the center of the render box.
 	private double rotation;
 
+	private boolean collidable;
+	private Shape hitbox;
+
 	/**
-	 * Constructs a RenderedObject centered at (x, y).
+	 * Constructs a RenderedObject centered at (x, y) with the dimensions of the texture.
 	 * @param x The x-coordinate of the center of the object.
 	 * @param y The y-coordinate of the center of the object.
-	 * @param isVisible Sets if the object is visible by default.
+	 * @param visible Sets if the object is visible by default.
 	 */
-	public RenderedObject(double x, double y, boolean isVisible) {
-		Vector2D p0 = new Vector2D(x - texture.getWidth()/2, y - texture.getHeight()/2);
+	public RenderedObject(double x, double y, boolean visible, boolean collidable) {
+		Vector2D p0 = new Vector2D(x - texture.getWidth()/2.0, y - texture.getHeight()/2.0);
 		Vector2D p1 = new Vector2D(p0.x + texture.getWidth(), p0.y + texture.getHeight());
 		this.renderBox = new Rectangle(p0, p1);
-		this.position = new Vector2D(x, y);
-		this.isVisible = isVisible;
-	}
-
-	public RenderedObject(double x, double y, int sizeX, int sizeY, boolean isVisible) {
-		Vector2D p0 = new Vector2D(x - sizeX/2.0, y - sizeY/2.0);
-		Vector2D p1 = new Vector2D(p0.x + sizeX/2.0, p0.y + sizeY/2.0);
-		this.renderBox = new Rectangle(p0, p1);
-		this.position = new Vector2D(x, y);
-		this.isVisible = isVisible;
+		this.visible = visible;
+		this.collidable = collidable;
+		this.hitbox = new Rectangle(p0, p1);
 	}
 
 	/**
-	 * This method is called somewhere in paintComponent() to draw the object.
+	 * Constructs a RenderedObject centered at (x, y) with dimensions (sizeX, sizeY).
+	 * @param x The x-coordinate of the center of the object.
+	 * @param y The y-coordinate of the center of the object.
+	 * @param sizeX The width of the object.
+	 * @param sizeY The height of the object.
+	 * @param visible Sets if the object is visible by default.
+	 * @param collidable Sets if the object is collidable by default.
+	 */
+	public RenderedObject(double x, double y, int sizeX, int sizeY, boolean visible, boolean collidable) {
+		Vector2D p0 = new Vector2D(x - sizeX/2.0, y - sizeY/2.0);
+		Vector2D p1 = new Vector2D(x + sizeX/2.0, y + sizeY/2.0);
+		this.renderBox = new Rectangle(p0, p1);
+		this.visible = visible;
+		this.collidable = collidable;
+		this.hitbox = new Rectangle(p0, p1);
+	}
+	/**
+	 * Gets the object's position.
+	 * @return A 2D vector containing the object's coordinates.
+	 */
+	public Vector2D getPosition() { return hitbox.getCenter(); }
+
+	/**
+	 * Moves the hitbox's center to (x, y). The render box is drawn in the same relative position
+	 * as the hitbox.
+	 * @param x The new x-coordinate.
+	 * @param y The new y-coordinate.
+	 */
+	public void setPosition(double x, double y) {
+
+		Vector2D hitboxCenter = new Vector2D(hitbox.getCenter());
+		Vector2D relativePos1 = new Vector2D(hitboxCenter).sub(hitbox.pos);
+		Vector2D relativePos2 = new Vector2D(hitboxCenter).sub(((Rectangle) hitbox).pos2);
+		Vector2D relativePosRbox1 = new Vector2D(hitboxCenter).sub(renderBox.pos);
+		Vector2D relativePosRbox2 = new Vector2D(hitboxCenter).sub(renderBox.pos2);
+		hitbox.pos.set(x, y);
+		hitbox.pos.add(relativePos1);
+		System.out.println(hitboxCenter.x + ", " + hitboxCenter.y);
+
+		if (hitbox instanceof Rectangle) {
+			Rectangle temp = (Rectangle) hitbox;
+			Vector2D relativePos2 = new Vector2D(hitboxCenter).sub(temp.pos2);
+			temp.pos2.set(x, y);
+			temp.pos2.add(relativePos2);
+		}
+
+
+		renderBox.pos.set(x, y);
+		renderBox.pos.add(relativePosRbox1);
+
+		renderBox.pos2.set(x, y);
+		renderBox.pos2.add(relativePosRbox2);
+
+	}
+
+	/**
+	 * This method is called to draw the object.
 	 * @param g The JPanel's graphics object.
 	 */
 	public void draw(Graphics g, Vector2D offset) {
 		// Prevents drawing if the object is invisible.
-		if (!this.isVisible) return;
+		if (!this.isVisible()) return;
 
-		Vector2D drawPos = new Vector2D(renderBox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
-		Vector2D size = renderBox.size();
-		if (texture == null) {
-			g.drawRect((int) Math.round(drawPos.x), (int) Math.round(drawPos.y), (int) Math.round(size.x), (int) Math.round(size.y));
-		} else {
-
+		// Gets the screen position from the world position
+		Vector2D drawPos;
+		Vector2D sizeRenderBox = renderBox.size();
+		if (this.hitbox instanceof Rectangle) {
+			drawPos = new Vector2D(this.hitbox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
+			Vector2D sizeHitbox = ((Rectangle) this.hitbox).size();
+			//g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeHitbox.x, (int) sizeHitbox.y);
+		} else if (this.hitbox instanceof Circle) {
+			int radius = (int) Math.round(((Circle) this.hitbox).radius);
+			drawPos = new Vector2D(this.hitbox.pos).add(-offset.x + GameFrame.WIDTH/2 - radius, -offset.y + GameFrame.HEIGHT/2 - radius);
+			g.drawOval((int) drawPos.x, (int) drawPos.y, radius*2, radius*2);
 		}
+		drawPos = new Vector2D(this.renderBox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
+		g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeRenderBox.x, (int) sizeRenderBox.y);
+		//g.setColor(oldColor);
 	}
 
 	/**
@@ -110,7 +170,7 @@ public class RenderedObject implements Renderable {
 	 * @return true if the object is visible, false otherwise.
 	 */
 	public boolean isVisible() {
-		return isVisible;
+		return visible;
 	}
 
 	/**
@@ -118,7 +178,7 @@ public class RenderedObject implements Renderable {
 	 * @param visible Set to true if the object is visible, false otherwise.
 	 */
 	public void setVisible(boolean visible) {
-		isVisible = visible;
+		this.visible = visible;
 	}
 
 	/**
@@ -138,20 +198,34 @@ public class RenderedObject implements Renderable {
 	}
 
 	/**
-	 * Gets the object's position.
-	 * @return A 2D vector containing the object's coordinates.
+	 * Checks if the object is collidable.
+	 * @return True if the object is collidable, false otherwise.
 	 */
-	public Vector2D getPosition() { return position; }
-
-	/**
-	 * Sets the object's position.
-	 * @param x The new x-coordinate.
-	 * @param y The new y-coordinate.
-	 */
-	public void setPosition(double x, double y) {
-		Vector2D size = new Vector2D(renderBox.size());
-		this.renderBox.pos = new Vector2D(x - size.x/2, y - size.y/2);
-		this.renderBox.pos2 = new Vector2D(x + size.x/2, y + size.y/2);
+	public boolean isCollidable() {
+		return collidable;
 	}
 
+	/**
+	 * Sets the value of collidable.
+	 * @param collidable The new value.
+	 */
+	public void setCollidable(boolean collidable) {
+		this.collidable = collidable;
+	}
+
+	/**
+	 * Gets the object's hitbox.
+	 * @return The object's hitbox.
+	 */
+	public Shape getHitbox() {
+		return hitbox;
+	}
+
+	/**
+	 * Sets the object's hitbox.
+	 * @param hitbox The new hitbox.
+	 */
+	public void setHitbox(Shape hitbox) {
+		this.hitbox = hitbox;
+	}
 }

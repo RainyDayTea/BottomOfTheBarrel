@@ -20,10 +20,34 @@ public class Vector2D {
 		this.x = vec.x;
 		this.y = vec.y;
 	}
-
+	public Vector2D add(Vector2D vec) {
+		this.x += vec.x;
+		this.y += vec.y;
+		return this;
+	}
 	public Vector2D add(double x, double y) {
 		this.x += x;
 		this.y += y;
+		return this;
+	}
+	public Vector2D set(Vector2D vec) {
+		this.x = vec.x;
+		this.y = vec.y;
+		return this;
+	}
+	public Vector2D set(double x, double y) {
+		this.x = x;
+		this.y = y;
+		return this;
+	}
+	public Vector2D sub(Vector2D vec) {
+		this.x -= vec.x;
+		this.y -= vec.y;
+		return this;
+	}
+	public Vector2D sub(double x, double y) {
+		this.x -= x;
+		this.y -= y;
 		return this;
 	}
 
@@ -51,6 +75,14 @@ public class Vector2D {
 	}
 
 	/**
+	 * Calculates the magnitude squared.
+	 * @return The magnitude squared of the vector.
+	 */
+	public double getMagnitudeSq() {
+		return x * x + y * y;
+	}
+
+	/**
 	 * Gets the unit vector of this vector. A unit vector is a vector with magnitude 1.
 	 * @return A new Vector2D containing the unit vector.
 	 */
@@ -62,7 +94,7 @@ public class Vector2D {
 			normalizedVec.y /= mag;
 			return normalizedVec;
 		} else {
-			return new Vector2D();
+			return new Vector2D(1, 0);
 		}
 	}
 	

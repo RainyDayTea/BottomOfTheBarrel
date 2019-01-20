@@ -16,6 +16,9 @@ import java.util.ArrayList;
  * If too many objects lie within the same region, the region is recursively subdivided into four quadrants
  * until this condition becomes false.
  *
+ * It should be noted that any objects that do not intersect the quadtree at any level are not affected
+ * by collisions.
+ *
  * The original code was found on a website and written by Steven Lambert. It has been edited slightly to
  * fit the needs of this project.
  *
@@ -77,6 +80,7 @@ public class QuadTree implements Renderable {
 				node.draw(g, offset);
 			}
 		}
+
 		// Draw lines between the objects and the node
 		for (Shape obj : objects) {
 			Vector2D objDrawPos = new Vector2D(obj.getCenter()).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
@@ -139,6 +143,8 @@ public class QuadTree implements Renderable {
 			}
 		} else if (obj instanceof Circle) {
 			Circle cir = (Circle) obj;
+			if (cir.pos.x + cir.radius < region.pos.x || cir.pos.x - cir.radius > region.pos2.x) return -2;
+			if (cir.pos.y + cir.radius < region.pos.y || cir.pos.y - cir.radius > region.pos2.y) return -2;
 
 			boolean fitsQ12 = cir.pos.y + cir.radius < center.y;
 			boolean fitsQ34 = cir.pos.y - cir.radius > center.y;
@@ -187,18 +193,33 @@ public class QuadTree implements Renderable {
 		}
 	}
 
+	public void remove(Shape newObj) {
+		if (objects.contains(newObj)) {
+			objects.remove(newObj);
+			return;
+		}
+		int index = getIndex(newObj);
+		if (index == -2) return;
+		if (nodes[0] != null) {
+			if (index >= 0) {
+				nodes[index].remove(newObj);
+				return;
+			}
+		}
+	}
+
 	/**
 	 * Given an input object, fetches all other objects that could feasibly collide with it.
 	 * @param returnObjs An empty ArrayList.
 	 * @param obj The inputted object.
 	 * @return The inputted ArrayList, filled with objects.
 	 */
-	public ArrayList retrieve(ArrayList returnObjs, Shape obj) {
+	public ArrayList<Shape> retrieve(ArrayList<Shape> returnObjs, Shape obj) {
 		int index = getIndex(obj);
-		if (index != -1 && nodes[0] != null) {
+		if (index >= 0 && nodes[0] != null) {
 			nodes[index].retrieve(returnObjs, obj);
 		}
-		returnObjs.addAll(objects);
+		if (index > -2) returnObjs.addAll(objects);
 
 		return returnObjs;
 	}

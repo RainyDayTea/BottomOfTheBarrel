@@ -16,6 +16,8 @@ public class Player extends Character {
 	private PlayerKeyListener keyListener;
 	private PlayerMouseListener mouseListener;
 
+	private static final float FRICTION = 0.8f;
+
 	private BufferedImage[] dodgeRoll;
 	private BufferedImage[] standing;
 	private BufferedImage[] running;
@@ -23,10 +25,11 @@ public class Player extends Character {
 	private int speed;
 	private String weapon;
 
-	public Player(double x, double y, int sizeX, int sizeY, Vector2D maxSpeed, PlayerKeyListener kl, PlayerMouseListener ml) {
+	public Player(double x, double y, int sizeX, int sizeY, int maxSpeed, PlayerKeyListener kl, PlayerMouseListener ml) {
 		super(x, y, sizeX, sizeY, maxSpeed);
 		keyListener = kl;
 		mouseListener = ml;
+		setHitbox(new Circle(x, y, sizeX/2));
 	}
 
 	/**
@@ -34,22 +37,23 @@ public class Player extends Character {
 	 * @param scalar Scalar used to adjust magnitude of movement according to framerate.
 	 */
 	public void updateMovement(double scalar) {
+		//this.setSpeed(this.getSpeed().scale(FRICTION));
 		// Detects key presses for player movement
 		HashSet<String> pressedKeys = keyListener.getPressedKeys();
-		Vector2D playerSpeed = new Vector2D();
+		Vector2D playerAccel = new Vector2D();
 		if (pressedKeys.contains("W")) {
-			playerSpeed.add(0, -5);
+			playerAccel.add(0, -1);
 		}
 		if (pressedKeys.contains("S")) {
-			playerSpeed.add(0, 5);
+			playerAccel.add(0, 1);
 		}
 		if (pressedKeys.contains("A")) {
-			playerSpeed.add(-5, 0);
+			playerAccel.add(-1, 0);
 		}
 		if (pressedKeys.contains("D")) {
-			playerSpeed.add(5, 0);
+			playerAccel.add(1, 0);
 		}
-		this.setSpeed(playerSpeed);
+		this.setAccel(playerAccel);
 	}
 
 	public PlayerKeyListener getKeyListener() {

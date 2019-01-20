@@ -20,7 +20,7 @@ public class Rectangle extends Shape {
 	}
 
 	/**
-	 * Constructs a rectangle using one point and given dimensions.
+	 * Constructs a rectangle centered at one point and with given dimensions.
 	 * @param pos The top-left corner of the rectangle.
 	 * @param sizeX The horizontal length.
 	 * @param sizeY The vertical length.
@@ -29,8 +29,8 @@ public class Rectangle extends Shape {
 		if (sizeX < 0 || sizeY < 0) {
 			throw new NumberFormatException("Rectangle cannot have negative dimensions");
 		}
-		this.pos = pos;
-		this.pos2 = new Vector2D(pos.x + sizeX, pos.y + sizeY);
+		this.pos = pos.sub(sizeX/2, sizeY/2);
+		this.pos2 = new Vector2D(pos.x + sizeX/2, pos.y + sizeY/2);
 	}
 
 	/**
@@ -67,6 +67,7 @@ public class Rectangle extends Shape {
 	 * Returns the center point of the rectangle.
 	 * @return The center point, in the form of a vector.
 	 */
+	@Override
 	public Vector2D getCenter() {
 		return new Vector2D((pos.x + pos2.x) / 2, (pos.y + pos2.y) / 2);
 	}
@@ -79,6 +80,15 @@ public class Rectangle extends Shape {
 		double sizeX = Math.abs(this.pos2.x - this.pos.x);
 		double sizeY = Math.abs(this.pos2.y - this.pos.y);
 		return new Vector2D(sizeX, sizeY);
+	}
+
+	/**
+	 * Returns the bounding box of this rectangle.
+	 * @return A copy of this rectangle, since this is a trivial task.
+	 */
+	@Override
+	public Rectangle getBoundingBox() {
+		return new Rectangle(this.pos.x, this.pos.y, this.pos2.x, this.pos2.y);
 	}
 
 }
