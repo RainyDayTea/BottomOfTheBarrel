@@ -12,4 +12,5 @@ public interface Collidable {
 	boolean isStatic = false;
 	boolean collisionEnabled = false;
 	HashSet<Shape> ignoreList = new HashSet<>();
+
 }

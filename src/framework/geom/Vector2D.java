@@ -17,18 +17,13 @@ public class Vector2D {
 		this.y = y;
 	}
 	public Vector2D(Vector2D vec) {
-		this.set(vec);
+		this.x = vec.x;
+		this.y = vec.y;
 	}
 
-	public Vector2D add(Vector2D other) {
-		this.x += other.x;
-		this.y += other.y;
-		return this;
-	}
-
-	public Vector2D sub(Vector2D other) {
-		this.x -= other.x;
-		this.y -= other.y;
+	public Vector2D add(double x, double y) {
+		this.x += x;
+		this.y += y;
 		return this;
 	}
 
@@ -36,11 +31,6 @@ public class Vector2D {
 		this.x *= scalar;
 		this.y *= scalar;
 		return this;
-	}
-
-	public void set(Vector2D vec) {
-		this.x = vec.x;
-		this.y = vec.y;
 	}
 
 	/**

@@ -3,7 +3,8 @@ package game;
 /**
  * This template can be used as reference or a starting point
  * for your final summative project
- * @author Mangat
+ *
+ * @author Mangat, edited by Jake Zhao
  **/
 
 //Graphics &GUI imports
@@ -14,27 +15,29 @@ import java.util.ArrayList;
 // Project framework import
 import framework.*;
 
-class GameFrame extends JFrame {
+public class GameFrame extends JFrame {
 
+	public static final int WIDTH = 1280;
+	public static final int HEIGHT = 720;
 	static GameAreaPanel gamePanel;
 
 	GameFrame() {
 
-		super("My Game");
-		// Set the frame to full screen
+		super("BOTTOM OF THE BARREL");
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(600, 400);
+		this.setSize(WIDTH, HEIGHT);
+		this.setResizable(false);
 		// this.setUndecorated(true);  //Set to true to remove title bar
-		//frame.setResizable(false);
-
-
 
 		//Set up the game panel (where we put our graphics)
-		gamePanel = new GameAreaPanel();
-		this.add(new GameAreaPanel());
-
 		PlayerKeyListener keyListener = new PlayerKeyListener();
+		PlayerMouseListener mouseListener = new PlayerMouseListener();
 		this.addKeyListener(keyListener);
+		this.addMouseListener(mouseListener);
+		this.addMouseMotionListener(mouseListener);
+		gamePanel = new GameAreaPanel(keyListener, mouseListener);
+		this.add(gamePanel);
 
 		this.requestFocusInWindow(); //make sure the frame has focus
 
@@ -53,7 +56,7 @@ class GameFrame extends JFrame {
 			this.repaint();
 			try {
 				Thread.sleep(GameAreaPanel.STEP_DELAY);
-			} catch (Exception exc) {}  //delay
+			} catch (Exception exc) {exc.printStackTrace();}  //delay
 		}
 	}
 
