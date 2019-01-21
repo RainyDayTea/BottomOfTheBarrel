@@ -24,14 +24,14 @@ public class Circle extends Shape {
 		this.radius = radius;
 	}
 
-	public Vector2D getCenter() { return pos; }
+	public Vector2D getCenter() { return new Vector2D(pos); }
 
 	public double getArea() {
 		return radius * radius * Math.PI;
 	}
 
-	public double getCir() {
-		return 2 * Math.PI * radius;
+	public Rectangle getBoundingBox() {
+		return new Rectangle(pos.x - radius, pos.y - radius, pos.x + radius, pos.y + radius);
 	}
 
 }

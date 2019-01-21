@@ -8,7 +8,6 @@ import player.Player;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
 
 public class GameAreaPanel extends JPanel {
 
@@ -24,8 +23,7 @@ public class GameAreaPanel extends JPanel {
 	private final long startedTime = System.nanoTime() / 1000000;
 
 	private Player player;
-	private ArrayList<RenderedObject> world;
-	private QuadTree hitboxes;
+	private Room room;
 
 	private PlayerKeyListener keyListener;
 	private PlayerMouseListener mouseListener;
@@ -35,25 +33,30 @@ public class GameAreaPanel extends JPanel {
 		this.mouseListener = mouseListener;
 		this.requestFocusInWindow();
 
-		Vector2D playerMaxSpeed = new Vector2D(10, 10);
 		// Initialize the player
-		player = new Player(0, 0, 100, 100, playerMaxSpeed, keyListener, mouseListener);
+		player = new Player(0, 0, 50, 50, 10, keyListener, mouseListener);
 
 
 		// Initialize the environment and add the player to it
-		this.world = new ArrayList<>();
-		this.hitboxes = new QuadTree(-GameFrame.WIDTH, -GameFrame.HEIGHT, GameFrame.WIDTH, GameFrame.HEIGHT);
-		world.add(player);
-		hitboxes.insert(player.getRenderBox());
+		Rectangle roomBounds = new Rectangle(-400, -400, 400, 400);
+		this.room = new Room(this, roomBounds);
+		room.place(player);
 
 		// Test: Spawn a whole bunch of objects with random motion
-		for (int i = 0; i < 300; i++) {
-			double randomX = Math.random()*GameFrame.WIDTH - GameFrame.WIDTH/2;
-			double randomY = Math.random()*GameFrame.HEIGHT - GameFrame.HEIGHT/2;
-			MovableObject rObj = new MovableObject(randomX, randomY, 50, 50, new Vector2D(), true);
-			rObj.setSpeed(new Vector2D(Math.random() * 4 - 2, Math.random() * 4 - 2));
-			world.add(rObj);
-			hitboxes.insert(rObj.getRenderBox());
+		for (int i = 0; i < 50; i++) {
+			// Generate a random position inside the room
+			int xPos = (int) (Math.random() * roomBounds.pos2.x - roomBounds.pos2.x/2);
+			int yPos = (int) (Math.random() * roomBounds.pos2.y - roomBounds.pos2.y/2);
+			double xSpeed = Math.random() - 0.5;
+			double ySpeed = Math.random() - 0.5;
+			MovableObject obj = new MovableObject(0, 0, 25, 25, 10, true);
+			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
+			// Give the objects a circular hitbox
+			double rng = Math.random();
+			if (rng > 0.5) {
+				obj.setHitbox(new Circle(0, 0, 12.5));
+			}
+			room.place(obj);
 		}
 	}
 
@@ -66,28 +69,8 @@ public class GameAreaPanel extends JPanel {
 		deltaTime = System.nanoTime() / 1000000 - startedTime - currTime;
 		currTime = System.nanoTime() / 1000000 - startedTime;
 
-		// Update hitboxes
-		hitboxes.clear();
-		for (RenderedObject obj : world) {
-			hitboxes.insert(obj.getRenderBox());
-		}
-		hitboxes.insert(player.getRenderBox());
-
-		/* ----- Render and update objects ---- */
-		g.setColor(Color.BLUE);
-
-		for (RenderedObject obj : world) {
-			// Draw all visible objects
-			if (obj.isVisible()) obj.draw(g, player.getPosition());
-			// Update the player according to position.
-			if (obj instanceof Player) {
-				((Player) obj).updateMovement(deltaTime / GameAreaPanel.STEP_DELAY);
-			}
-			// Attempt to move all physics objects
-			if (obj instanceof MovableObject) {
-				((MovableObject) obj).move(deltaTime / GameAreaPanel.STEP_DELAY);
-			}
-		}
+		/* ----- Update the room ---- */
+		room.update(g, deltaTime / (double) STEP_DELAY);
 
 		/* ----- Print debug info on top of everything ---- */
 		if (SHOW_DEBUG) {
@@ -100,7 +83,22 @@ public class GameAreaPanel extends JPanel {
 			g.drawString("y: " + player.getPosition().y, 700, 412);
 			g.setColor(oldColor);
 			g.setColor(Color.ORANGE);
-			hitboxes.draw(g, player.getPosition());
 		}
+	}
+
+	public Player getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
+
+	public Room getRoom() {
+		return room;
+	}
+
+	public void setRoom(Room room) {
+		this.room = room;
 	}
 }

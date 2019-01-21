@@ -1,8 +1,11 @@
 package framework;
 
+import framework.geom.Circle;
+import framework.geom.Rectangle;
 import framework.geom.Vector2D;
+import game.GameFrame;
 
-import java.awt.image.BufferedImage;
+import java.awt.*;
 
 /**
  * An object capable of movement. Two fields, speed and accel are added to
@@ -15,44 +18,28 @@ public class MovableObject extends RenderedObject {
 	// The object's speed. This is added to the object's position every frame.
 	private Vector2D speed;
 	// The object's maximum speed. Setting the x or y value less than 0 disables this.
-	private Vector2D maxSpeed;
+	private int maxSpeed;
 	// The object's acceleration. This is added to the object's speed every frame.
 	private Vector2D accel;
 
-	/**
-	 * Constructs a movable object with no initial speed and acceleration.
-	 * @param x The x-coordinate of the object.
-	 * @param y The y-coordinate of the object.
-	 * @param isVisible If the object is initially visible.
-	 */
-	public MovableObject(double x, double y, Vector2D maxSpeed, boolean isVisible) {
-		super(x, y, isVisible);
-		this.speed = new Vector2D();
-		this.accel = new Vector2D();
-		if (maxSpeed != null) maxSpeed = new Vector2D(maxSpeed);
-		else maxSpeed = new Vector2D(-1, -1);
-	}
-
-	public MovableObject(double x, double y, int sizeX, int sizeY, Vector2D maxSpeed, boolean isVisible) {
-		super(x, y, sizeX, sizeY, isVisible);
-		this.speed = new Vector2D();
-		this.accel = new Vector2D();
-		if (maxSpeed != null) maxSpeed = new Vector2D(maxSpeed);
-		else maxSpeed = new Vector2D(-1, -1);
-	}
+	private static final float FRICTION = 0.8f;
+	private boolean hasFriction;
 
 	/**
-	 * Constructs a movable object with an initial speed and acceleration.
+	 * Constructs a movable object. The hitbox is automatically set to the render box.
 	 * @param x The x-coordinate of the object.
 	 * @param y The y-coordinate of the object.
-	 * @param isVisible If the object is initially visible.
-	 * @param speed The object's initial speed.
-	 * @param accel The object's initial acceleration.
+	 * @param sizeX The width of the object.
+	 * @param sizeY The height of the object.
+	 * @param maxSpeed The max speed of the object.
+	 * @param collidable Sets if the object is initially collidable.
 	 */
-	public MovableObject(int x, int y, boolean isVisible, Vector2D speed, Vector2D accel) {
-		super(x, y, isVisible);
-		this.speed = speed;
-		this.accel = accel;
+	public MovableObject(double x, double y, int sizeX, int sizeY, int maxSpeed, boolean collidable) {
+		super(x, y, sizeX, sizeY, true, collidable);
+		this.speed = new Vector2D();
+		this.accel = new Vector2D();
+		this.maxSpeed = maxSpeed;
+		this.hasFriction = false;
 	}
 
 	/**
@@ -62,20 +49,12 @@ public class MovableObject extends RenderedObject {
 	 * @param scalar The time scale.
 	 */
 	public void move(double scalar) {
-		Vector2D newPos = this.getPosition().add(this.speed.x * scalar, this.speed.y * scalar);
+		Vector2D newSpd = new Vector2D(this.speed).add(this.accel.x * scalar, this.accel.y * scalar);
+		double clampedMagnitude = Math.sqrt(Math.min(this.maxSpeed*this.maxSpeed, newSpd.getMagnitudeSq()));
+		this.setSpeed(newSpd.getUnitVector().scale(clampedMagnitude));
+		Vector2D newPos = new Vector2D(this.getPosition()).add(this.speed.x * scalar, this.speed.y * scalar);
 		this.setPosition(newPos.x, newPos.y);
-	}
-
-	/**
-	 * Translates the render box by a coordinate (x, y).
-	 * @param x The x coordinate.
-	 * @param y The y coordinate.
-	 */
-	public void translate(double x, double y) {
-		this.getRenderBox().pos.x += x;
-		this.getRenderBox().pos.y += y;
-		this.getRenderBox().pos2.x += x;
-		this.getRenderBox().pos2.y += y;
+		if (this.hasFriction) this.speed.scale(FRICTION);
 	}
 
 	/**
@@ -91,25 +70,23 @@ public class MovableObject extends RenderedObject {
 	 * @param speed The new speed.
 	 */
 	public void setSpeed(Vector2D speed) {
-		this.speed.x = speed.x;
-		this.speed.y = speed.y;
+		this.speed = speed;
 	}
 
 	/**
 	 * Gets the object's current max speed.
-	 * @return The object's max speed as a vector.
+	 * @return The object's max speed.
 	 */
-	public Vector2D getMaxSpeed() {
+	public int getMaxSpeed() {
 		return maxSpeed;
 	}
 
 	/**
-	 * Sets the object's MaxSpeed.
-	 * @param maxSpeed The new MaxSpeed.
+	 * Sets the object's max speed.
+	 * @param maxSpeed The new max speed.
 	 */
-	public void setMaxSpeed(Vector2D maxSpeed) {
-		this.maxSpeed.x = maxSpeed.x;
-		this.maxSpeed.y = maxSpeed.y;
+	public void setMaxSpeed(int maxSpeed) {
+		this.maxSpeed = maxSpeed;
 	}
 
 	/**
@@ -125,7 +102,14 @@ public class MovableObject extends RenderedObject {
 	 * @param accel The new acceleration.
 	 */
 	public void setAccel(Vector2D accel) {
-		this.accel.x = accel.x;
-		this.accel.y = accel.y;
+		this.accel = accel;
+	}
+
+	public boolean hasFriction() {
+		return hasFriction;
+	}
+
+	public void setHasFriction(boolean hasFriction) {
+		this.hasFriction = hasFriction;
 	}
 }

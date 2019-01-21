@@ -23,10 +23,12 @@ public class Player extends Character {
 	private int speed;
 	private String weapon;
 
-	public Player(double x, double y, int sizeX, int sizeY, Vector2D maxSpeed, PlayerKeyListener kl, PlayerMouseListener ml) {
+	public Player(double x, double y, int sizeX, int sizeY, int maxSpeed, PlayerKeyListener kl, PlayerMouseListener ml) {
 		super(x, y, sizeX, sizeY, maxSpeed);
 		keyListener = kl;
 		mouseListener = ml;
+		this.setHasFriction(true);
+		this.setRegisterCollisions(false);
 	}
 
 	/**
@@ -36,20 +38,20 @@ public class Player extends Character {
 	public void updateMovement(double scalar) {
 		// Detects key presses for player movement
 		HashSet<String> pressedKeys = keyListener.getPressedKeys();
-		Vector2D playerSpeed = new Vector2D();
+		Vector2D playerAccel = new Vector2D();
 		if (pressedKeys.contains("W")) {
-			playerSpeed.add(0, -5);
+			playerAccel.add(0, -1);
 		}
 		if (pressedKeys.contains("S")) {
-			playerSpeed.add(0, 5);
+			playerAccel.add(0, 1);
 		}
 		if (pressedKeys.contains("A")) {
-			playerSpeed.add(-5, 0);
+			playerAccel.add(-1, 0);
 		}
 		if (pressedKeys.contains("D")) {
-			playerSpeed.add(5, 0);
+			playerAccel.add(1, 0);
 		}
-		this.setSpeed(playerSpeed);
+		this.setAccel(playerAccel);
 	}
 
 	public PlayerKeyListener getKeyListener() {
