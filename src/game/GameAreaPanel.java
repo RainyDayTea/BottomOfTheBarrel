@@ -40,7 +40,7 @@ public class GameAreaPanel extends JPanel {
 		// Initialize the environment and add the player to it
 		Rectangle roomBounds = new Rectangle(-400, -400, 400, 400);
 		this.room = new Room(this, roomBounds);
-		room.place(player);
+		room.place(player, false);
 
 		// Test: Spawn a whole bunch of objects with random motion
 		for (int i = 0; i < 50; i++) {
@@ -52,11 +52,8 @@ public class GameAreaPanel extends JPanel {
 			MovableObject obj = new MovableObject(0, 0, 25, 25, 10, true);
 			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
 			// Give the objects a circular hitbox
-			double rng = Math.random();
-			if (rng > 0.5) {
-				obj.setHitbox(new Circle(0, 0, 12.5));
-			}
-			room.place(obj);
+			obj.setHitbox(new Circle(0, 0, 12.5));
+			room.place(obj, true);
 		}
 	}
 
@@ -101,4 +98,6 @@ public class GameAreaPanel extends JPanel {
 	public void setRoom(Room room) {
 		this.room = room;
 	}
+
+	public long getDeltaTime() { return deltaTime; }
 }

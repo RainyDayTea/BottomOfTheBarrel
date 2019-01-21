@@ -35,7 +35,6 @@ public class RenderedObject implements Renderable {
 	private double rotation;
 
 	private boolean collidable;
-	private boolean registerCollisions;
 	private Shape hitbox;
 
 	/**
@@ -51,7 +50,6 @@ public class RenderedObject implements Renderable {
 		this.visible = visible;
 		this.collidable = collidable;
 		this.hitbox = new Rectangle(p0, p1);
-		this.registerCollisions = true;
 	}
 
 	/**
@@ -70,7 +68,6 @@ public class RenderedObject implements Renderable {
 		this.visible = visible;
 		this.collidable = collidable;
 		this.hitbox = new Rectangle(p0, p1);
-		this.registerCollisions = true;
 	}
 	/**
 	 * Gets the object's position.
@@ -236,13 +233,5 @@ public class RenderedObject implements Renderable {
 	 */
 	public void setHitbox(Shape hitbox) {
 		this.hitbox = hitbox;
-	}
-
-	public boolean registersCollisions() {
-		return registerCollisions;
-	}
-
-	public void setRegisterCollisions(boolean registerCollisions) {
-		this.registerCollisions = registerCollisions;
 	}
 }

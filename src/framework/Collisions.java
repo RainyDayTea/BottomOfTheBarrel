@@ -1,6 +1,7 @@
 package framework;
 
 import framework.geom.*;
+import player.Player;
 
 /**
  * WIP
@@ -16,11 +17,11 @@ public class Collisions {
 		Vector2D vecA = manifold.a.getPosition().sub(correction);
 		Vector2D vecB = manifold.b.getPosition().add(correction);
 
-		if (manifold.a instanceof MovableObject) {
+		if (manifold.a instanceof MovableObject && !(manifold.a instanceof Character)) {
 			MovableObject aMovable = (MovableObject) manifold.a;
 			aMovable.setPosition(vecA.x, vecA.y);
 		}
-		if (manifold.a instanceof MovableObject) {
+		if (manifold.a instanceof MovableObject && !(manifold.b instanceof Character)) {
 			MovableObject bMovable = (MovableObject) manifold.b;
 			bMovable.setPosition(vecB.x, vecB.y);
 		}
@@ -58,15 +59,13 @@ public class Collisions {
 		Vector2D vec = new Vector2D(b.getPosition().sub(a.getPosition()));
 		double velAlongNormal = new Vector2D(vec).dotProduct(normal);
 
-		if (velAlongNormal <= 0) {
-			//velAlongNormal *= -0.5;
+		if (velAlongNormal > 0) {
+			velAlongNormal *= -0.5;
 			Vector2D impulse = new Vector2D(normal).scale(velAlongNormal);
-			if (true) {
-				System.out.println("A");
+			if (a instanceof MovableObject && !(a instanceof Character)) {
 				((MovableObject) a).setSpeed(((MovableObject) a).getSpeed().sub(new Vector2D(impulse)));
 			}
-			if (true) {
-				System.out.println("B");
+			if (b instanceof MovableObject && !(b instanceof Character)) {
 				((MovableObject) b).setSpeed(((MovableObject) b).getSpeed().sub(new Vector2D(impulse)));
 			}
 		}

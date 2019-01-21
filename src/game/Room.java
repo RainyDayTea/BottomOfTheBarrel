@@ -23,10 +23,10 @@ public class Room {
 		this.objects = new ArrayList<>();
 	}
 
-	public void place(RenderedObject object) {
+	public void place(RenderedObject object, boolean registerCollisions) {
 		if (!objects.contains(object) && isWithinBounds(object)) {
 			objects.add(object);
-			if (object.getHitbox() != null) {
+			if (object.getHitbox() != null && registerCollisions) {
 				quadtree.insert(object.getHitbox());
 				hitboxes.put(object.getHitbox(), object);
 			}
@@ -38,7 +38,7 @@ public class Room {
 			objects.remove(object);
 			if (object.getHitbox() != null) {
 				quadtree.remove(object.getHitbox());
-				hitboxes.put(object.getHitbox(), object);
+				hitboxes.remove(object.getHitbox());
 			}
 		}
 	}
@@ -93,22 +93,25 @@ public class Room {
 				Vector2D speed = new Vector2D(movObj.getSpeed());
 				// West wall
 				pos.x = Math.max(bounds.pos.x, pos.x);
-				if (pos.x <= -bounds.pos.x && speed.x < 0) {
-
+				if (pos.x <= bounds.pos.x && speed.x < 0) {
+					speed.add(-2 * speed.x, 0);
 				}
 				// East wall
 				pos.x = Math.min(bounds.pos2.x, pos.x);
 				if (pos.x >= bounds.pos2.x && speed.x > 0) {
+					speed.add(-2 * speed.x, 0);
 				}
 				// North wall
 				pos.y = Math.max(bounds.pos.y, pos.y);
-				if (pos.y <= -bounds.pos.y && speed.y < 0) {
+				if (pos.y <= bounds.pos.y && speed.y < 0) {
+					speed.add(0, -2 * speed.y);
 				}
 				// South wall
 				pos.y = Math.min(bounds.pos2.y, pos.y);
 				if (pos.y >= bounds.pos2.y && speed.y > 0) {
+					speed.add(0, -2 * speed.y);
 				}
-
+				movObj.setSpeed(speed);
 				movObj.setPosition(pos.x, pos.y);
 			}
 
@@ -118,8 +121,10 @@ public class Room {
 					Manifold mf = new Manifold();
 					mf.a = hitboxes.get(curr);
 					mf.b = hitboxes.get(other);
-					if (Collisions.circVsCirc(mf)) {
-						Collisions.resolve(mf.a, mf.b, mf.normal);
+					if (mf.a != null && mf.b != null) {
+						if (Collisions.circVsCirc(mf)) {
+							Collisions.resolve(mf.a, mf.b, mf.normal);
+						}
 					}
 				}
 			}

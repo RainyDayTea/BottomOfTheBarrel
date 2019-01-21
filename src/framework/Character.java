@@ -9,7 +9,6 @@ import java.io.File;
 public abstract class Character extends MovableObject {
 
     private String name;
-    private Shape hitbox;
     private boolean invulnerable;
     private Statistics stats;
     public static final BufferedImage defaultTexture = null;
@@ -19,9 +18,8 @@ public abstract class Character extends MovableObject {
         this.setInvulnerable(false);
         this.setName(this.hashCode() + "");
         this.setStats(stats);
-        Circle hitbox = new Circle(x, y, Math.min(sizeX, sizeY)/2.0);
+        Circle hitbox = new Circle(x, y + 10, Math.min(sizeX, sizeY)/2.0);
         super.setHitbox(hitbox);
-        this.setHitbox(hitbox);
     }
 
     public void setName(String name){
@@ -31,10 +29,6 @@ public abstract class Character extends MovableObject {
     public String getName() {
         return name;
     }
-
-    public Shape getHitbox() { return hitbox; }
-
-    public void setHitbox(Shape hitbox) { this.hitbox = hitbox; }
 
     public boolean isInvulnerable() {
         return invulnerable;
