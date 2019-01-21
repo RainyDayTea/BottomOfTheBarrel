@@ -2,19 +2,14 @@ package framework;
 
 import framework.geom.*;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-
 public abstract class Character extends MovableObject {
 
     private String name;
     private boolean invulnerable;
     private Statistics stats;
-    public static final BufferedImage defaultTexture = null;
 
     public Character(double x, double y, int sizeX, int sizeY, int maxSpeed) {
-        super(x, y, sizeX, sizeY, maxSpeed, true);
+        super(x, y, sizeX, sizeY, maxSpeed, false);
         this.setInvulnerable(false);
         this.setName(this.hashCode() + "");
         this.setStats(stats);

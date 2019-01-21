@@ -5,9 +5,15 @@ import framework.geom.Rectangle;
 import framework.geom.Shape;
 import framework.geom.Vector2D;
 import game.GameFrame;
+import map.Room;
+import org.w3c.dom.css.Rect;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * The superclass for all renderable objects. All objects that
@@ -21,10 +27,10 @@ import java.awt.image.BufferedImage;
  *
  * @author Jake Zhao
  */
-public class RenderedObject implements Renderable {
+public class RenderedObject implements Renderable, Collidable {
 	// The texture of the object. It's recommended to set this as a pointer
 	// instead of storing the BufferedImage directly.
-	private static BufferedImage texture;
+	protected BufferedImage texture;
 	// The rectangle which the texture is drawn in.
 	private Rectangle renderBox;
 	// Toggles if the texture is drawn.
@@ -140,6 +146,102 @@ public class RenderedObject implements Renderable {
 	}
 
 	/**
+	 * Checks if the current object exceeds a rectangular region.
+	 * @param rect The specified rectangular region.
+	 * @return True if any of the object exceeds the boundary, false otherwise.
+	 */
+	@Override
+	public boolean exceedsBoundary(Rectangle rect) {
+		// Objects without a hitbox can exceed boundary.
+		if (this.hitbox == null) return false;
+		// Only check if it is a movable objects. Static objects can exceed boundaries.
+		if (this instanceof MovableObject) {
+			Rectangle bounds = new Rectangle(rect.pos.x, rect.pos.y, rect.pos2.x, rect.pos2.y);
+			MovableObject movObj = (MovableObject) this;
+			Vector2D objSize = this.hitbox.getBoundingBox().size();
+			bounds.pos.add(objSize.x/2, objSize.y/2);
+			bounds.pos2.sub(objSize.x/2, objSize.y/2);
+			Vector2D pos = new Vector2D(movObj.getPosition());
+			// West wall
+			if (pos.x < bounds.pos.x) {
+				return true;
+			}
+			// East wall
+			if (pos.x > bounds.pos2.x) {
+				return true;
+			}
+			// North wall
+			if (pos.y < bounds.pos.y) {
+				return true;
+			}
+			// South wall
+			if (pos.y > bounds.pos2.y) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Method called upon intersecting another object.
+	 * @param other Another specified object.
+	 */
+	@Override
+	public void onIntersect(Room room, RenderedObject other) {
+		if (this == other) return;
+		if (this.hitbox instanceof Circle && other.hitbox instanceof Circle) {
+			Manifold mf = new Manifold();
+			mf.a = this;
+			mf.b = other;
+			if (mf.a != null && mf.b != null) {
+				// Don't worry if the objects are not collidable, this is handled in the called method
+				if (Collisions.circVsCirc(mf)) {
+					Collisions.resolve(mf.a, mf.b, mf.normal);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Method called when exceeding a boundary.
+	 * @param rect The specified rectangular region.
+	 */
+	@Override
+	public void onIntersectBoundary(Room room, Rectangle rect) {
+		if (this instanceof MovableObject) {
+			Rectangle bounds = new Rectangle(rect.pos.x, rect.pos.y, rect.pos2.x, rect.pos2.y);
+			MovableObject movObj = (MovableObject) this;
+			Vector2D objSize = this.hitbox.getBoundingBox().size();
+			bounds.pos.add(objSize.x/2, objSize.y/2);
+			bounds.pos2.sub(objSize.x/2, objSize.y/2);
+			Vector2D pos = movObj.getPosition();
+			Vector2D speed = new Vector2D(movObj.getSpeed());
+			// West wall
+			pos.x = Math.max(bounds.pos.x, pos.x);
+			if (pos.x <= bounds.pos.x && speed.x < 0) {
+				speed.add(-2 * speed.x, 0);
+			}
+			// East wall
+			pos.x = Math.min(bounds.pos2.x, pos.x);
+			if (pos.x >= bounds.pos2.x && speed.x > 0) {
+				speed.add(-2 * speed.x, 0);
+			}
+			// North wall
+			pos.y = Math.max(bounds.pos.y, pos.y);
+			if (pos.y <= bounds.pos.y && speed.y < 0) {
+				speed.add(0, -2 * speed.y);
+			}
+			// South wall
+			pos.y = Math.min(bounds.pos2.y, pos.y);
+			if (pos.y >= bounds.pos2.y && speed.y > 0) {
+				speed.add(0, -2 * speed.y);
+			}
+			movObj.setSpeed(speed);
+			movObj.setPosition(pos.x, pos.y);
+		}
+	}
+
+	/**
 	 * Gets the object's render box.
 	 * @return The render box.
 	 */
@@ -156,15 +258,15 @@ public class RenderedObject implements Renderable {
 	}
 
 	/**
-	 * Gets the object's texture.
-	 * @return The texture.
+	 * Sets the current object's texture to one in ImageLoader.
+	 * @param key The key of the texture in ImageLoader's HashMap.
 	 */
-	public BufferedImage getTexture() {
-		return texture;
+	public void setTexture(String key) {
+		this.texture = ImageLoader.get(key);
 	}
 
 	/**
-	 * Sets the object's texture.
+	 * Sets the object's texture directly from a BufferedImage.
 	 * @param texture The new texture.
 	 */
 	public void setTexture(BufferedImage texture) {

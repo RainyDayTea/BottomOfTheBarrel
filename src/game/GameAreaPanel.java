@@ -4,10 +4,11 @@ import framework.*;
 import framework.geom.Circle;
 import framework.geom.Rectangle;
 import framework.geom.Vector2D;
-import player.Player;
+import entity.Player;
+import map.Room;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class GameAreaPanel extends JPanel {
 
@@ -21,8 +22,9 @@ public class GameAreaPanel extends JPanel {
 	private long currTime = 0;
 	// The UNIX timestamp at which the game started.
 	private final long startedTime = System.nanoTime() / 1000000;
-
+	// The entity object.
 	private Player player;
+	// The current room.
 	private Room room;
 
 	private PlayerKeyListener keyListener;
@@ -33,28 +35,18 @@ public class GameAreaPanel extends JPanel {
 		this.mouseListener = mouseListener;
 		this.requestFocusInWindow();
 
-		// Initialize the player
+		/* ----- Load all images ----- */
+		ImageLoader.loadAll();
+
+		/* ----- Initialize the player ----- */
 		player = new Player(0, 0, 50, 50, 10, keyListener, mouseListener);
 
 
-		// Initialize the environment and add the player to it
-		Rectangle roomBounds = new Rectangle(-400, -400, 400, 400);
+		// Initialize the environment and add the entity to it
+		Rectangle roomBounds = new Rectangle(-448, -448, 448, 448);
 		this.room = new Room(this, roomBounds);
 		room.place(player, false);
 
-		// Test: Spawn a whole bunch of objects with random motion
-		for (int i = 0; i < 50; i++) {
-			// Generate a random position inside the room
-			int xPos = (int) (Math.random() * roomBounds.pos2.x - roomBounds.pos2.x/2);
-			int yPos = (int) (Math.random() * roomBounds.pos2.y - roomBounds.pos2.y/2);
-			double xSpeed = Math.random() - 0.5;
-			double ySpeed = Math.random() - 0.5;
-			MovableObject obj = new MovableObject(0, 0, 25, 25, 10, true);
-			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
-			// Give the objects a circular hitbox
-			obj.setHitbox(new Circle(0, 0, 12.5));
-			room.place(obj, true);
-		}
 	}
 
 	public void paintComponent(Graphics g) {

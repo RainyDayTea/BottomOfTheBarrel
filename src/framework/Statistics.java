@@ -2,7 +2,7 @@ package framework;
 
 public class Statistics {
     private int maxHP;
-    private int currHP = maxHP;
+    private int currHP;
     private int damage;
 
     public Statistics(int maxHP, int damage){

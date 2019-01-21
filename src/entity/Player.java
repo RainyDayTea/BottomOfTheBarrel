@@ -1,10 +1,9 @@
-package player;
+package entity;
 
 import framework.*;
 import framework.Character;
-import framework.geom.Circle;
-import framework.geom.Shape;
 import framework.geom.Vector2D;
+import game.GameAreaPanel;
 import game.GameFrame;
 
 import javax.imageio.ImageIO;
@@ -34,22 +33,17 @@ public class Player extends Character {
 		keyListener = kl;
 		mouseListener = ml;
 		this.setHasFriction(true);
-		try {
-			BufferedImage spriteSheet = ImageIO.read(new File("img/cowboy_spritesheet.png"));
-			this.animator = new ImageAnimator(spriteSheet, 4, 4, 64, 64);
-		} catch(IOException exc) {
-			System.err.println(exc);
-		}
-
+		this.setTexture("Player");
+		this.animator = new ImageAnimator(texture, 4, 4, 64, 64);
 		this.lastAnimLocation = this.getHitbox().getCenter();
 	}
 
 	/**
-	 * Performs an update on the player's movement.
+	 * Performs an update on the entity's movement.
 	 * @param scalar Scalar used to adjust magnitude of movement according to framerate.
 	 */
 	public void updateMovement(double scalar) {
-		// Detects key presses for player movement
+		// Detects key presses for entity movement
 		HashSet<String> pressedKeys = keyListener.getPressedKeys();
 		Vector2D playerAccel = new Vector2D();
 		// Walk north
@@ -75,11 +69,12 @@ public class Player extends Character {
 		this.setAccel(playerAccel);
 	}
 
+	@Override
 	public void draw(Graphics g, Vector2D offset) {
 		Vector2D screenPos = new Vector2D(this.getRenderBox().pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
 
 		double dist = new Vector2D(this.getRenderBox().getCenter()).sub(lastAnimLocation).getMagnitude();
-		// If player wandered too far from the last position, animate it by one frame/step
+		// If entity wandered too far from the last position, animate it by one frame/step
 		if (dist > ANIM_THRESHOLD) {
 			animator.nextImage();
 			this.lastAnimLocation = this.getRenderBox().getCenter();
@@ -88,7 +83,23 @@ public class Player extends Character {
 		if (this.getSpeed().getMagnitude() < 1) {
 			animator.setPos(animator.getRow(), 0);
 		}
-		g.drawImage(animator.getImage(), (int) screenPos.x, (int) screenPos.y, null);
+		g.drawImage(animator.getImage(), (int) screenPos.x - 5, (int) screenPos.y, null);
+
+		if (GameAreaPanel.SHOW_DEBUG) {
+			Color oldColor = g.getColor();
+			Vector2D renderBoxSize = this.getRenderBox().size();
+			Vector2D hitboxSize = this.getHitbox().getBoundingBox().size();
+			Vector2D screenPosHitbox = new Vector2D(this.getHitbox().getBoundingBox().pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
+			Vector2D mousePos = mouseListener.getPosition();
+			g.setColor(Color.BLUE);
+			g.drawRect((int) screenPos.x, (int) screenPos.y, (int) renderBoxSize.x, (int) renderBoxSize.y);
+			g.setColor(Color.CYAN);
+			g.drawOval((int) screenPosHitbox.x, (int) screenPosHitbox.y, (int) hitboxSize.x, (int) hitboxSize.y);
+			g.setColor(Color.RED);
+			g.drawLine((int) (screenPosHitbox.x + hitboxSize.x/2), (int) (screenPosHitbox.y + hitboxSize.y/2), (int) mousePos.x, (int) mousePos.y);
+
+			g.setColor(oldColor);
+		}
 	}
 
 	public PlayerKeyListener getKeyListener() {

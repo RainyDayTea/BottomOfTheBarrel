@@ -1,8 +1,10 @@
-package game;
+package map;
 
 import framework.*;
 import framework.geom.*;
-import player.Player;
+import game.GameAreaPanel;
+import game.GameFrame;
+import entity.Player;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -21,6 +23,24 @@ public class Room {
 		this.quadtree = new QuadTree(bounds.pos.x, bounds.pos.y, bounds.pos2.x, bounds.pos2.y);
 		this.hitboxes = new HashMap<>();
 		this.objects = new ArrayList<>();
+
+		Vector2D size = bounds.size();
+		Ground ground = new Ground(bounds.pos.x, bounds.pos.y, (int) size.x, (int) size.y);
+		this.place(ground, false);
+
+		// Test: Spawn a whole bunch of objects with random motion
+		for (int i = 0; i < 5; i++) {
+			// Generate a random position inside the room
+			int xPos = (int) (Math.random() * bounds.pos2.x - bounds.pos2.x/2);
+			int yPos = (int) (Math.random() * bounds.pos2.y - bounds.pos2.y/2);
+			double xSpeed = Math.random() - 0.5;
+			double ySpeed = Math.random() - 0.5;
+			MovableObject obj = new MovableObject(xPos, yPos, 25, 25, 5, true);
+			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
+			// Give the objects a circular hitbox
+			obj.setHitbox(new Circle(xPos, yPos, 12.5));
+			this.place(obj, true);
+		}
 	}
 
 	public void place(RenderedObject object, boolean registerCollisions) {
@@ -60,7 +80,7 @@ public class Room {
 		Player player = null;
 		/* ----- Movement & physics part is done here ----- */
 		for (RenderedObject obj : objects) {
-			// Update the player according to position.
+			// Update the entity according to position.
 			if (obj instanceof Player) {
 				((Player) obj).updateMovement(timescale);
 				player = (Player) obj;
@@ -82,50 +102,14 @@ public class Room {
 			Shape curr = obj.getHitbox();
 			quadtree.retrieve(retrievedObjects, curr);
 
-			// Constrain to bounds of the room
-			if (obj instanceof MovableObject) {
-				MovableObject movObj = (MovableObject) obj;
-				Vector2D objSize = obj.getHitbox().getBoundingBox().size();
-				Rectangle bounds = this.bounds.getBoundingBox();
-				bounds.pos.add(objSize.x/2, objSize.y/2);
-				bounds.pos2.sub(objSize.x/2, objSize.y/2);
-				Vector2D pos = movObj.getPosition();
-				Vector2D speed = new Vector2D(movObj.getSpeed());
-				// West wall
-				pos.x = Math.max(bounds.pos.x, pos.x);
-				if (pos.x <= bounds.pos.x && speed.x < 0) {
-					speed.add(-2 * speed.x, 0);
-				}
-				// East wall
-				pos.x = Math.min(bounds.pos2.x, pos.x);
-				if (pos.x >= bounds.pos2.x && speed.x > 0) {
-					speed.add(-2 * speed.x, 0);
-				}
-				// North wall
-				pos.y = Math.max(bounds.pos.y, pos.y);
-				if (pos.y <= bounds.pos.y && speed.y < 0) {
-					speed.add(0, -2 * speed.y);
-				}
-				// South wall
-				pos.y = Math.min(bounds.pos2.y, pos.y);
-				if (pos.y >= bounds.pos2.y && speed.y > 0) {
-					speed.add(0, -2 * speed.y);
-				}
-				movObj.setSpeed(speed);
-				movObj.setPosition(pos.x, pos.y);
+			if (obj.exceedsBoundary(bounds)) {
+				obj.onIntersectBoundary(this, bounds);
 			}
 
 			for (Shape other : retrievedObjects) {
-				if (curr == other) continue;
-				if (curr instanceof Circle && other instanceof Circle) {
-					Manifold mf = new Manifold();
-					mf.a = hitboxes.get(curr);
-					mf.b = hitboxes.get(other);
-					if (mf.a != null && mf.b != null) {
-						if (Collisions.circVsCirc(mf)) {
-							Collisions.resolve(mf.a, mf.b, mf.normal);
-						}
-					}
+				if (hitboxes.get(other) != null) {
+					RenderedObject otherObj = hitboxes.get(other);
+					obj.onIntersect(this, otherObj);
 				}
 			}
 		}
