@@ -19,7 +19,9 @@ public abstract class Character extends MovableObject {
         this.setInvulnerable(false);
         this.setName(this.hashCode() + "");
         this.setStats(stats);
-        this.setHitbox(this.getRenderBox());
+        Circle hitbox = new Circle(x, y, Math.min(sizeX, sizeY)/2.0);
+        super.setHitbox(hitbox);
+        this.setHitbox(hitbox);
     }
 
     public void setName(String name){

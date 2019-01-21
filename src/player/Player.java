@@ -16,8 +16,6 @@ public class Player extends Character {
 	private PlayerKeyListener keyListener;
 	private PlayerMouseListener mouseListener;
 
-	private static final float FRICTION = 0.8f;
-
 	private BufferedImage[] dodgeRoll;
 	private BufferedImage[] standing;
 	private BufferedImage[] running;
@@ -29,7 +27,8 @@ public class Player extends Character {
 		super(x, y, sizeX, sizeY, maxSpeed);
 		keyListener = kl;
 		mouseListener = ml;
-		setHitbox(new Circle(x, y, sizeX/2));
+		this.setHasFriction(true);
+		this.setRegisterCollisions(false);
 	}
 
 	/**
@@ -37,7 +36,6 @@ public class Player extends Character {
 	 * @param scalar Scalar used to adjust magnitude of movement according to framerate.
 	 */
 	public void updateMovement(double scalar) {
-		//this.setSpeed(this.getSpeed().scale(FRICTION));
 		// Detects key presses for player movement
 		HashSet<String> pressedKeys = keyListener.getPressedKeys();
 		Vector2D playerAccel = new Vector2D();

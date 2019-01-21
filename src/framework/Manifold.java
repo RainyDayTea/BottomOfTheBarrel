@@ -11,9 +11,8 @@ import framework.geom.Vector2D;
  * @author Randy Gaul, Jake Zhao
  */
 public class Manifold {
-	public Shape a;
-	public Shape b;
+	public RenderedObject a;
+	public RenderedObject b;
 	public double penetration;
-	public Vector2D aNormal;
-	public Vector2D bNormal;
+	public Vector2D normal;
 }

@@ -43,16 +43,19 @@ public class GameAreaPanel extends JPanel {
 		room.place(player);
 
 		// Test: Spawn a whole bunch of objects with random motion
-		for (int i = 0; i < 0; i++) {
+		for (int i = 0; i < 50; i++) {
 			// Generate a random position inside the room
 			int xPos = (int) (Math.random() * roomBounds.pos2.x - roomBounds.pos2.x/2);
 			int yPos = (int) (Math.random() * roomBounds.pos2.y - roomBounds.pos2.y/2);
-			double xSpeed = Math.random() * 3 - 1.5;
-			double ySpeed = Math.random() * 3 - 1.5;
-			MovableObject obj = new MovableObject(0, 0, 50, 50, 10, true);
+			double xSpeed = Math.random() - 0.5;
+			double ySpeed = Math.random() - 0.5;
+			MovableObject obj = new MovableObject(0, 0, 25, 25, 10, true);
 			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
 			// Give the objects a circular hitbox
-			//obj.setHitbox(new Circle(0, 0, 25));
+			double rng = Math.random();
+			if (rng > 0.5) {
+				obj.setHitbox(new Circle(0, 0, 12.5));
+			}
 			room.place(obj);
 		}
 	}

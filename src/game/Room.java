@@ -1,8 +1,6 @@
 package game;
 
-import framework.MovableObject;
-import framework.QuadTree;
-import framework.RenderedObject;
+import framework.*;
 import framework.geom.*;
 import player.Player;
 
@@ -15,7 +13,7 @@ public class Room {
 	private GameAreaPanel gamePanel;
 	private Rectangle bounds;
 	private QuadTree quadtree;
-	private HashMap<Shape, MovableObject> hitboxes;
+	private HashMap<Shape, RenderedObject> hitboxes;
 	private ArrayList<RenderedObject> objects;
 
 	public Room(GameAreaPanel panel, Rectangle bounds) {
@@ -28,12 +26,9 @@ public class Room {
 	public void place(RenderedObject object) {
 		if (!objects.contains(object) && isWithinBounds(object)) {
 			objects.add(object);
-			if (object instanceof MovableObject) {
-				MovableObject castedObject = (MovableObject) object;
-				if (castedObject.getHitbox() != null) {
-					quadtree.insert(castedObject.getHitbox());
-					hitboxes.put(castedObject.getHitbox(), castedObject);
-				}
+			if (object.getHitbox() != null) {
+				quadtree.insert(object.getHitbox());
+				hitboxes.put(object.getHitbox(), object);
 			}
 		}
 	}
@@ -41,12 +36,9 @@ public class Room {
 	public void remove(RenderedObject object) {
 		if (objects.contains(object)) {
 			objects.remove(object);
-			if (object instanceof MovableObject) {
-				MovableObject castedObject = (MovableObject) object;
-				if (castedObject.getHitbox() != null) {
-					quadtree.remove(castedObject.getHitbox());
-					hitboxes.put(castedObject.getHitbox(), castedObject);
-				}
+			if (object.getHitbox() != null) {
+				quadtree.remove(object.getHitbox());
+				hitboxes.put(object.getHitbox(), object);
 			}
 		}
 	}
@@ -76,13 +68,61 @@ public class Room {
 			// Attempt to move all physics objects
 			if (obj instanceof MovableObject) {
 				((MovableObject) obj).move(timescale);
-				MovableObject mov = (MovableObject) obj;
 			}
 		}
 		// Clears and re-updates the quadtree
 		quadtree.clear();
 		for (RenderedObject obj : objects) {
 			quadtree.insert(obj.getHitbox());
+		}
+
+		/* ----- Collision detection ----- */
+		for (RenderedObject obj : objects) {
+			ArrayList<Shape> retrievedObjects = new ArrayList<>();
+			Shape curr = obj.getHitbox();
+			quadtree.retrieve(retrievedObjects, curr);
+
+			// Constrain to bounds of the room
+			if (obj instanceof MovableObject) {
+				MovableObject movObj = (MovableObject) obj;
+				Vector2D objSize = obj.getHitbox().getBoundingBox().size();
+				Rectangle bounds = this.bounds.getBoundingBox();
+				bounds.pos.add(objSize.x/2, objSize.y/2);
+				bounds.pos2.sub(objSize.x/2, objSize.y/2);
+				Vector2D pos = movObj.getPosition();
+				Vector2D speed = new Vector2D(movObj.getSpeed());
+				// West wall
+				pos.x = Math.max(bounds.pos.x, pos.x);
+				if (pos.x <= -bounds.pos.x && speed.x < 0) {
+
+				}
+				// East wall
+				pos.x = Math.min(bounds.pos2.x, pos.x);
+				if (pos.x >= bounds.pos2.x && speed.x > 0) {
+				}
+				// North wall
+				pos.y = Math.max(bounds.pos.y, pos.y);
+				if (pos.y <= -bounds.pos.y && speed.y < 0) {
+				}
+				// South wall
+				pos.y = Math.min(bounds.pos2.y, pos.y);
+				if (pos.y >= bounds.pos2.y && speed.y > 0) {
+				}
+
+				movObj.setPosition(pos.x, pos.y);
+			}
+
+			for (Shape other : retrievedObjects) {
+				if (curr == other) continue;
+				if (curr instanceof Circle && other instanceof Circle) {
+					Manifold mf = new Manifold();
+					mf.a = hitboxes.get(curr);
+					mf.b = hitboxes.get(other);
+					if (Collisions.circVsCirc(mf)) {
+						Collisions.resolve(mf.a, mf.b, mf.normal);
+					}
+				}
+			}
 		}
 
 		/* ----- Debug rendering ----- */
@@ -97,6 +137,7 @@ public class Room {
 				ArrayList<Shape> intersects = new ArrayList<>();
 				intersects = quadtree.retrieve(intersects, obj.getHitbox());
 				for (Shape shape : intersects) {
+					if (shape == obj.getHitbox()) continue;
 					if (Shape.intersect(obj.getHitbox(), shape)) {
 						Vector2D center1 = obj.getHitbox().getCenter().add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
 						Vector2D center2 = shape.getCenter().add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);

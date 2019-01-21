@@ -22,6 +22,9 @@ public class MovableObject extends RenderedObject {
 	// The object's acceleration. This is added to the object's speed every frame.
 	private Vector2D accel;
 
+	private static final float FRICTION = 0.8f;
+	private boolean hasFriction;
+
 	/**
 	 * Constructs a movable object. The hitbox is automatically set to the render box.
 	 * @param x The x-coordinate of the object.
@@ -36,6 +39,7 @@ public class MovableObject extends RenderedObject {
 		this.speed = new Vector2D();
 		this.accel = new Vector2D();
 		this.maxSpeed = maxSpeed;
+		this.hasFriction = false;
 	}
 
 	/**
@@ -50,6 +54,7 @@ public class MovableObject extends RenderedObject {
 		this.setSpeed(newSpd.getUnitVector().scale(clampedMagnitude));
 		Vector2D newPos = new Vector2D(this.getPosition()).add(this.speed.x * scalar, this.speed.y * scalar);
 		this.setPosition(newPos.x, newPos.y);
+		if (this.hasFriction) this.speed.scale(FRICTION);
 	}
 
 	/**
@@ -98,5 +103,13 @@ public class MovableObject extends RenderedObject {
 	 */
 	public void setAccel(Vector2D accel) {
 		this.accel = accel;
+	}
+
+	public boolean hasFriction() {
+		return hasFriction;
+	}
+
+	public void setHasFriction(boolean hasFriction) {
+		this.hasFriction = hasFriction;
 	}
 }

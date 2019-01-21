@@ -35,6 +35,7 @@ public class RenderedObject implements Renderable {
 	private double rotation;
 
 	private boolean collidable;
+	private boolean registerCollisions;
 	private Shape hitbox;
 
 	/**
@@ -50,6 +51,7 @@ public class RenderedObject implements Renderable {
 		this.visible = visible;
 		this.collidable = collidable;
 		this.hitbox = new Rectangle(p0, p1);
+		this.registerCollisions = true;
 	}
 
 	/**
@@ -68,12 +70,21 @@ public class RenderedObject implements Renderable {
 		this.visible = visible;
 		this.collidable = collidable;
 		this.hitbox = new Rectangle(p0, p1);
+		this.registerCollisions = true;
 	}
 	/**
 	 * Gets the object's position.
 	 * @return A 2D vector containing the object's coordinates.
 	 */
-	public Vector2D getPosition() { return hitbox.getCenter(); }
+	public Vector2D getPosition() {
+		if (hitbox != null) {
+			return hitbox.getCenter();
+		} else if (renderBox != null) {
+			return renderBox.getCenter();
+		} else {
+			return new Vector2D();
+		}
+	}
 
 	/**
 	 * Moves the hitbox's center to (x, y). The render box is drawn in the same relative position
@@ -83,28 +94,23 @@ public class RenderedObject implements Renderable {
 	 */
 	public void setPosition(double x, double y) {
 
+		Vector2D sizeRenderBox = renderBox.size();
+		Vector2D sizeHitbox = null;
 		Vector2D hitboxCenter = new Vector2D(hitbox.getCenter());
 		Vector2D relativePos1 = new Vector2D(hitboxCenter).sub(hitbox.pos);
-		Vector2D relativePos2 = new Vector2D(hitboxCenter).sub(((Rectangle) hitbox).pos2);
 		Vector2D relativePosRbox1 = new Vector2D(hitboxCenter).sub(renderBox.pos);
-		Vector2D relativePosRbox2 = new Vector2D(hitboxCenter).sub(renderBox.pos2);
-		hitbox.pos.set(x, y);
-		hitbox.pos.add(relativePos1);
-		System.out.println(hitboxCenter.x + ", " + hitboxCenter.y);
+
 
 		if (hitbox instanceof Rectangle) {
-			Rectangle temp = (Rectangle) hitbox;
-			Vector2D relativePos2 = new Vector2D(hitboxCenter).sub(temp.pos2);
-			temp.pos2.set(x, y);
-			temp.pos2.add(relativePos2);
+			sizeHitbox = ((Rectangle) hitbox).size();
+			hitbox.pos.set(x, y).sub(relativePos1);
+			((Rectangle) hitbox).pos2.set(hitbox.pos).add(sizeHitbox);
+		} else if (hitbox instanceof Circle) {
+			hitbox.pos.set(x, y).add(relativePos1);
 		}
 
-
-		renderBox.pos.set(x, y);
-		renderBox.pos.add(relativePosRbox1);
-
-		renderBox.pos2.set(x, y);
-		renderBox.pos2.add(relativePosRbox2);
+		renderBox.pos.set(x, y).sub(relativePosRbox1);
+		renderBox.pos2.set(renderBox.pos).add(sizeRenderBox);
 
 	}
 
@@ -116,21 +122,24 @@ public class RenderedObject implements Renderable {
 		// Prevents drawing if the object is invisible.
 		if (!this.isVisible()) return;
 
+		Color oldColor = g.getColor();
 		// Gets the screen position from the world position
 		Vector2D drawPos;
 		Vector2D sizeRenderBox = renderBox.size();
+		g.setColor(Color.BLUE);
+		drawPos = new Vector2D(this.renderBox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
+		g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeRenderBox.x, (int) sizeRenderBox.y);
+		g.setColor(Color.CYAN);
 		if (this.hitbox instanceof Rectangle) {
 			drawPos = new Vector2D(this.hitbox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
 			Vector2D sizeHitbox = ((Rectangle) this.hitbox).size();
-			//g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeHitbox.x, (int) sizeHitbox.y);
+			g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeHitbox.x, (int) sizeHitbox.y);
 		} else if (this.hitbox instanceof Circle) {
 			int radius = (int) Math.round(((Circle) this.hitbox).radius);
 			drawPos = new Vector2D(this.hitbox.pos).add(-offset.x + GameFrame.WIDTH/2 - radius, -offset.y + GameFrame.HEIGHT/2 - radius);
 			g.drawOval((int) drawPos.x, (int) drawPos.y, radius*2, radius*2);
 		}
-		drawPos = new Vector2D(this.renderBox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
-		g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeRenderBox.x, (int) sizeRenderBox.y);
-		//g.setColor(oldColor);
+		g.setColor(oldColor);
 	}
 
 	/**
@@ -227,5 +236,13 @@ public class RenderedObject implements Renderable {
 	 */
 	public void setHitbox(Shape hitbox) {
 		this.hitbox = hitbox;
+	}
+
+	public boolean registersCollisions() {
+		return registerCollisions;
+	}
+
+	public void setRegisterCollisions(boolean registerCollisions) {
+		this.registerCollisions = registerCollisions;
 	}
 }

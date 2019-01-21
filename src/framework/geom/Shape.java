@@ -41,7 +41,7 @@ public abstract class Shape {
 			// which is fairly expensive.
 			double distSq = Math.pow(b.pos.x-a.pos.x, 2) + Math.pow(b.pos.y-a.pos.y, 2);
 			double radiusSq = Math.pow(a.radius + b.radius, 2);
-			return radiusSq < distSq;
+			return radiusSq > distSq;
 		}
 
 		Rectangle a = null;
@@ -54,14 +54,10 @@ public abstract class Shape {
 			b = (Circle) sb;
 		}
 		// In the case that one object is a Rectangle, the other is a Circle
-		if (a != null && b != null) {
-			Vector2D aCenter = a.getCenter();
-			Vector2D aSize = a.size();
-			Vector2D diff = new Vector2D(Math.abs(aCenter.x - b.pos.x), Math.abs(aCenter.y - b.pos.y));
-			if (diff.x < aSize.x + b.radius || diff.y < aSize.y + b.radius) return true;
-			return false;
-		}
-		// For any extraneous cases, assume false
+		Vector2D aCenter = a.getCenter();
+		Vector2D aSize = a.size().scale(0.5);
+		Vector2D diff = new Vector2D(Math.abs(aCenter.x - b.pos.x), Math.abs(aCenter.y - b.pos.y));
+		if (diff.x < aSize.x + b.radius && diff.y < aSize.y + b.radius) return true;
 		return false;
 	}
 
