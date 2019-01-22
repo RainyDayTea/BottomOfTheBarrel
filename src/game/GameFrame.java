@@ -8,58 +8,138 @@ package game;
  **/
 
 //Graphics &GUI imports
-import javax.swing.JFrame;
+
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.border.EmptyBorder;
+
 // Project framework import
+
 import framework.*;
 
 public class GameFrame extends JFrame {
+    JFrame thisFrame;
+    boolean gameState = false;
 
-	public static final int WIDTH = 1280;
-	public static final int HEIGHT = 720;
-	static GameAreaPanel gamePanel;
+    public static final int WIDTH = 1280;
+    public static final int HEIGHT = 720;
+    static GameAreaPanel gamePanel;
 
-	GameFrame() {
+    GameFrame() {
 
-		super("Bottom of the Barrel");
+        super("Bottom of the Barrel");
 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setSize(WIDTH, HEIGHT);
-		this.setResizable(false);
-		// this.setUndecorated(true);  //Set to true to remove title bar
+        this.thisFrame = this;
+        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setSize(WIDTH, HEIGHT);
+        this.setResizable(false);
+        this.setUndecorated(true);  //Set to true to remove title bar
 
-		//Set up the game panel (where we put our graphics)
-		PlayerKeyListener keyListener = new PlayerKeyListener();
-		PlayerMouseListener mouseListener = new PlayerMouseListener();
-		this.addKeyListener(keyListener);
-		this.addMouseListener(mouseListener);
-		this.addMouseMotionListener(mouseListener);
-		gamePanel = new GameAreaPanel(keyListener, mouseListener);
-		this.add(gamePanel);
+        //Set up the game panel (where we put our graphics)
+        PlayerKeyListener keyListener = new PlayerKeyListener();
+        PlayerMouseListener mouseListener = new PlayerMouseListener();
+        this.addKeyListener(keyListener);
+        this.addMouseListener(mouseListener);
+        this.addMouseMotionListener(mouseListener);
 
-		this.requestFocusInWindow(); //make sure the frame has focus
 
-		this.setVisible(true);
+        //Create a Panel for stuff
+        JPanel decPanel = new DecoratedPanel();
+        decPanel.setBorder(new EmptyBorder(0, 1000, 50, 50));
 
-		//Start the game loop in a separate thread
-		Thread t = new Thread(new Runnable() { public void run() { step(); }}); //start the gameLoop
-		t.start();
+        //Create main panels to put stuff in
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());
+        mainPanel.setBackground(new Color(0, 0, 0, 0));
+        mainPanel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 
-	} //End of Constructor
+        //Create a JButton for the centerPanel
 
-	// The method to be called every frame
-	public void step() {
+        ImageIcon sb = new ImageIcon("img/startbutton.png");
+        JButton startButton = new JButton(sb);
 
-		while (true) {
-			this.repaint();
-			try {
-				Thread.sleep(GameAreaPanel.STEP_DELAY);
-			} catch (Exception exc) {exc.printStackTrace();}
-		}
-	}
+        startButton.setBackground(new Color(0, 0, 0, 0));
+        startButton.setRolloverIcon(new ImageIcon("img/startbuttonpressed.png"));
+        startButton.setBorder(BorderFactory.createEmptyBorder());
+        startButton.setFocusPainted(false);
+        startButton.addActionListener(new StartButtonListener());
+        if (startButton.getModel().isPressed()) {
+            gameState = true;
+        }
+        this.requestFocusInWindow(); //make sure the frame has focus
 
-	/*  ============ MAIN METHOD ==============  */
-	public static void main(String[] args) {
-		GameFrame game = new GameFrame();
-	}
+        //Create a JButton for the centerPanel
+        JLabel startLabel = new JLabel("<HTML><H1><font color='black'>Bottom of The Barrel</H1></HTML>");
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(new Color(0, 0, 0, 0));
+        bottomPanel.add(startButton);
+        // Create titlescreen
+        mainPanel.add(bottomPanel, BorderLayout.SOUTH);
+        mainPanel.add(startLabel, BorderLayout.CENTER);
+        decPanel.add(mainPanel);
+        //add the main panel to the frame
+        this.add(decPanel);
+        this.setVisible(true);
+        //Start the game loop in a separate thread
+
+        Thread t = new Thread(new Runnable() {
+            public void run() {
+                step();
+            }
+        }); //start the gameLoop
+        if (gameState == true) {
+            gamePanel = new GameAreaPanel(keyListener, mouseListener);
+            this.add(gamePanel);
+            t.start();
+        }
+
+        this.setVisible(true);
+    } //End of Constructor
+
+    // The method to be called every frame
+    public void step() {
+
+        while (true) {
+            this.repaint();
+            try {
+                Thread.sleep(GameAreaPanel.STEP_DELAY);
+            } catch (Exception exc) {
+                exc.printStackTrace();
+            }
+        }
+    }
+
+    //INNER CLASS - Over ride Paint Component for JPANEL
+    public class DecoratedPanel extends JPanel {
+
+        DecoratedPanel() {
+            this.setBackground(new Color(0, 0, 0, 0));
+        }
+
+        public void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Image pic = new ImageIcon("img/titlescreen1.png").getImage();
+            g.drawImage(pic, 0, 0, null);
+        }
+    }
+
+    //This is an inner class that is used to detect a button press
+    class StartButtonListener implements ActionListener {  //this is the required class definition
+        public void actionPerformed(ActionEvent event) {
+            thisFrame.dispose();
+            new StartingFrame(); //create a new FunkyFrame (another file that extends JFrame)
+        }
+
+    }
+    /*  ============ MAIN METHOD ==============  */
+    public static void main(String[] args) {
+        new GameFrame();
+    }
 
 }
