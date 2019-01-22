@@ -164,6 +164,7 @@ public class Room {
 			RenderedObject obj = removedObjects.get(i);
 			this.delete(obj);
 		}
+		removedObjects.clear();
 
 		/* ----- Movement & physics part is done here ----- */
 		for (int i = 0; i < objects.size(); i++) {

@@ -44,10 +44,10 @@ public class GameAreaPanel extends JPanel {
 		// Initialize the environment and add the player to it
 		Rectangle roomBounds = new Rectangle(-448, -448, 448, 448);
 		Room startingRoom = new Room(dungeon, roomBounds);
-		player = new Player(startingRoom, 0, 0, 50, 50, 10, keyListener, mouseListener);
+		Statistics playerStats = new Statistics(10, 1);
+		player = new Player(startingRoom, 0, 0, 50, 50, 10, playerStats, keyListener, mouseListener);
 		startingRoom.place(player, true);
 		dungeon.addRoom(0, 0, startingRoom);
-
 
 	}
 

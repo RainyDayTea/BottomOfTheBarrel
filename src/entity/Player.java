@@ -30,8 +30,8 @@ public class Player extends Character {
 	private String weapon;
 	private long lastShot;
 
-	public Player(Room parent, double x, double y, int sizeX, int sizeY, int maxSpeed, PlayerKeyListener kl, PlayerMouseListener ml) {
-		super(parent, x, y, sizeX, sizeY, maxSpeed);
+	public Player(Room parent, double x, double y, int sizeX, int sizeY, int maxSpeed, Statistics stats, PlayerKeyListener kl, PlayerMouseListener ml) {
+		super(parent, x, y, sizeX, sizeY, maxSpeed, stats);
 		keyListener = kl;
 		mouseListener = ml;
 		this.setHasFriction(true);
@@ -92,9 +92,8 @@ public class Player extends Character {
 		}
 		g.drawImage(animator.getImage(), (int) screenPos.x - 5, (int) screenPos.y, null);
 
-		if (GameAreaPanel.SHOW_DEBUG) {
-			super.draw(g, offset);
-		}
+		super.draw(g, offset);
+
 	}
 
 	public PlayerKeyListener getKeyListener() {
