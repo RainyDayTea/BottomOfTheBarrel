@@ -5,6 +5,7 @@ import framework.Character;
 import framework.geom.Vector2D;
 import game.GameAreaPanel;
 import game.GameFrame;
+import map.Room;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -29,8 +30,8 @@ public class Player extends Character {
 	private String weapon;
 	private long lastShot;
 
-	public Player(double x, double y, int sizeX, int sizeY, int maxSpeed, PlayerKeyListener kl, PlayerMouseListener ml) {
-		super(x, y, sizeX, sizeY, maxSpeed);
+	public Player(Room parent, double x, double y, int sizeX, int sizeY, int maxSpeed, PlayerKeyListener kl, PlayerMouseListener ml) {
+		super(parent, x, y, sizeX, sizeY, maxSpeed);
 		keyListener = kl;
 		mouseListener = ml;
 		this.setHasFriction(true);
@@ -92,19 +93,7 @@ public class Player extends Character {
 		g.drawImage(animator.getImage(), (int) screenPos.x - 5, (int) screenPos.y, null);
 
 		if (GameAreaPanel.SHOW_DEBUG) {
-			Color oldColor = g.getColor();
-			Vector2D renderBoxSize = this.getRenderBox().size();
-			Vector2D hitboxSize = this.getHitbox().getBoundingBox().size();
-			Vector2D screenPosHitbox = new Vector2D(this.getHitbox().getBoundingBox().pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
-			Vector2D mousePos = mouseListener.getPosition();
-			g.setColor(Color.BLUE);
-			g.drawRect((int) screenPos.x, (int) screenPos.y, (int) renderBoxSize.x, (int) renderBoxSize.y);
-			g.setColor(Color.CYAN);
-			g.drawOval((int) screenPosHitbox.x, (int) screenPosHitbox.y, (int) hitboxSize.x, (int) hitboxSize.y);
-			g.setColor(Color.RED);
-			g.drawLine((int) (screenPosHitbox.x + hitboxSize.x/2), (int) (screenPosHitbox.y + hitboxSize.y/2), (int) mousePos.x, (int) mousePos.y);
-
-			g.setColor(oldColor);
+			super.draw(g, offset);
 		}
 	}
 

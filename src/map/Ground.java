@@ -8,8 +8,8 @@ import java.awt.*;
 
 public class Ground extends RenderedObject {
 
-	public Ground(double x, double y, int sizeX, int sizeY) {
-		super(x, y, sizeX, sizeY, true, false);
+	public Ground(Room parent, double x, double y, int sizeX, int sizeY) {
+		super(parent, x, y, sizeX, sizeY, true, false);
 		this.setCollidable(false);
 		this.setTexture("Ground");
 	}

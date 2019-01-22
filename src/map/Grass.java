@@ -8,8 +8,8 @@ import java.awt.*;
 
 public class Grass extends RenderedObject {
 
-	public Grass(double x, double y, int sizeX, int sizeY) {
-		super(x, y, sizeX, sizeY, true, false);
+	public Grass(Room parent, double x, double y, int sizeX, int sizeY) {
+		super(parent, x, y, sizeX, sizeY, true, false);
 		double rng = Math.random();
 		if (rng > 0.5) {
 			this.setTexture("Grass1");

@@ -11,47 +11,75 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 
+/**
+ * A container class for all of the game objects in a local environment. Contains a list
+ * of objects and methods to manipulate them.
+ *
+ * @author Jake Zhao
+ */
 public class Room {
+	// The parent object of this
 	private Dungeon parent;
+	// The boundaries of the room
 	private Rectangle bounds;
+	// The room's quadtree
 	private QuadTree quadtree;
+	// A "lookup table" for looking up which object is associated with which hitbox (used for the quadtree)
 	private HashMap<Shape, RenderedObject> hitboxes;
+	// A list of all objects in the room
 	private ArrayList<RenderedObject> objects;
+	// A list of objects to be removed in the next update
+	private ArrayList<RenderedObject> removedObjects;
 	private Door[] doors;
 
 	public Room(Dungeon parent, Rectangle bounds) {
+		// Init all necessary components
 		this.bounds = bounds;
 		this.quadtree = new QuadTree(bounds.pos.x, bounds.pos.y, bounds.pos2.x, bounds.pos2.y);
 		this.hitboxes = new HashMap<>();
 		this.objects = new ArrayList<>();
+		this.removedObjects = new ArrayList<>();
 		this.doors = new Door[4];
 		this.parent = parent;
 
 		Vector2D size = bounds.size();
 		// Initialize the floor
-		Ground ground = new Ground(bounds.pos.x, bounds.pos.y, (int) size.x, (int) size.y);
+		Ground ground = new Ground(this, bounds.pos.x, bounds.pos.y, (int) size.x, (int) size.y);
 		this.place(ground, false);
 
-		// Add some grass
+		// Generate grass
 		for (int i = 0; i < 100; i++) {
 			Vector2D roomSize = bounds.size();
 			roomSize.sub(60, 60);
 			double randX = Math.random() * roomSize.x - roomSize.x/2;
 			double randY = Math.random() * roomSize.y - roomSize.y/2;
-			Grass grass = new Grass(randX, randY, 10, 10);
+			Grass grass = new Grass(this, randX, randY, 10, 10);
 			this.place(grass, false);
 		}
 
+		// Generate barrels
+		int numBarrels = (int) (Math.random() * 150);
+		for (int i = 0; i < numBarrels; i++) {
+			Vector2D roomSize = bounds.size();
+			roomSize.sub(60, 60);
+			double randX = Math.random() * roomSize.x - roomSize.x/2;
+			double randY = Math.random() * roomSize.y - roomSize.y/2;
+			Barrel barrel = new Barrel(this, randX, randY, 4);
+			this.place(barrel, true);
+			double xSpeed = Math.random() * 3 - 1.5;
+			double ySpeed = Math.random() * 3 - 1.5;
+			barrel.setSpeed(new Vector2D(xSpeed, ySpeed));
+		}
+
 		// Initialize doors
-		Door northDoor = new Door(bounds.getCenter().x, bounds.pos.y, 100, 20);
+		Door northDoor = new Door(this, bounds.getCenter().x, bounds.pos.y, 100, 20);
 		doors[0] = northDoor;
-		Door eastDoor = new Door(bounds.pos2.x, bounds.getCenter().y, 20, 100);
+		Door eastDoor = new Door(this, bounds.pos2.x, bounds.getCenter().y, 20, 100);
 		doors[1] = eastDoor;
-		Door southDoor = new Door(bounds.getCenter().x, bounds.pos2.y, 100, 20);
+		Door southDoor = new Door(this, bounds.getCenter().x, bounds.pos2.y, 100, 20);
 		doors[2] = southDoor;
-		Door westDoor = new Door(bounds.pos.x, bounds.getCenter().y, 20, 100);
+		Door westDoor = new Door(this, bounds.pos.x, bounds.getCenter().y, 20, 100);
 		doors[3] = westDoor;
 		for (int i = 0; i < 4; i++) {
 			this.place(doors[i], true);
@@ -64,7 +92,7 @@ public class Room {
 			int yPos = (int) (Math.random() * bounds.pos2.y - bounds.pos2.y/2);
 			double xSpeed = Math.random() * 3 - 1.5;
 			double ySpeed = Math.random() * 3 - 1.5;
-			Projectile obj = new Projectile(xPos, yPos, 25, new Vector2D(xSpeed, ySpeed), null, true);
+			Projectile obj = new Projectile(this, xPos, yPos, 25, new Vector2D(xSpeed, ySpeed), null, true);
 			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
 			// Give the objects a circular hitbox
 			obj.setHitbox(new Circle(xPos, yPos, 8));
@@ -91,8 +119,22 @@ public class Room {
 		}
 	}
 
+	/**
+	 * Marks an object for removal.
+	 * @param object The object to be removed.
+	 */
 	public void remove(RenderedObject object) {
-		if (objects.contains(object)) {
+		if (objects.contains(object) && !(removedObjects.contains(object))) {
+			removedObjects.add(object);
+		}
+	}
+
+	/**
+	 * Physically deletes the object from all data structures.
+	 * @param object The object to be deleted.
+	 */
+	private void delete(RenderedObject object) {
+		if (removedObjects.contains(object)) {
 			objects.remove(object);
 			if (object.getHitbox() != null) {
 				quadtree.remove(object.getHitbox());
@@ -116,6 +158,13 @@ public class Room {
 	 */
 	public void update(Graphics g, double timescale) {
 		Vector2D playerPos = new Vector2D();
+
+		/* ----- Delete removed items from the last update ----- */
+		for (int i = 0; i < removedObjects.size(); i++) {
+			RenderedObject obj = removedObjects.get(i);
+			this.delete(obj);
+		}
+
 		/* ----- Movement & physics part is done here ----- */
 		for (int i = 0; i < objects.size(); i++) {
 			RenderedObject obj = objects.get(i);
@@ -131,7 +180,7 @@ public class Room {
 						player.setLastShot(System.currentTimeMillis());
 						Vector2D projSpeed = new Vector2D(player.getMouseListener().getPosition()).sub(GameFrame.WIDTH/2, GameFrame.HEIGHT/2);
 						projSpeed.getUnitVector().scale(15);
-						Projectile playerProjectile = new Projectile((int) playerPos.x, (int) playerPos.y, 16, projSpeed, null, true);
+						Projectile playerProjectile = new Projectile(this, (int) playerPos.x, (int) playerPos.y, 16, projSpeed, null, true);
 						this.place(playerProjectile, true);
 					}
 				}
@@ -152,19 +201,23 @@ public class Room {
 			RenderedObject obj = objects.get(i);
 			ArrayList<Shape> retrievedObjects = new ArrayList<>();
 			quadtree.retrieve(retrievedObjects, obj.getHitbox());
-			Iterator<Shape> retrievedObjectsIterator = retrievedObjects.iterator();
 
 			if (obj.exceedsBoundary(bounds)) {
 				obj.onIntersectBoundary(this, bounds);
 			}
 
-			while (retrievedObjectsIterator.hasNext()) {
-				Shape other = retrievedObjectsIterator.next();
+			for (int j = 0; j < retrievedObjects.size(); j++) {
+				Shape other = retrievedObjects.get(j);
 				if (other == obj.getHitbox()) continue;
-				if (hitboxes.get(other) != null) {
+				// Continue only if both objects are registered in the hitboxes map
+				if (hitboxes.get(other) != null && hitboxes.get(obj.getHitbox()) != null) {
+					// Continue only if the objects intersect each other
 					if (Shape.intersect(obj.getHitbox(), other)) {
 						RenderedObject otherObj = hitboxes.get(other);
 						obj.onIntersect(this, otherObj);
+						// NOTE: Produces duplicate calls, but should be fine :)
+						// delete in case not fine though
+						otherObj.onIntersect(this, obj);
 					}
 				}
 			}

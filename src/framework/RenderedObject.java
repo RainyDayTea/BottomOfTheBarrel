@@ -6,17 +6,10 @@ import framework.geom.Shape;
 import framework.geom.Vector2D;
 import game.GameAreaPanel;
 import game.GameFrame;
-import map.Dungeon;
 import map.Room;
-import org.w3c.dom.css.Rect;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.util.HashSet;
 
 /**
  * The superclass for all renderable objects. All objects that
@@ -31,6 +24,7 @@ import java.util.HashSet;
  * @author Jake Zhao
  */
 public class RenderedObject implements Renderable, Collidable {
+	private Room parent;
 	// The texture of the object. It's recommended to set this as a pointer
 	// instead of storing the BufferedImage directly.
 	protected BufferedImage texture;
@@ -49,13 +43,15 @@ public class RenderedObject implements Renderable, Collidable {
 
 	/**
 	 * Constructs a RenderedObject centered at (x, y) with the dimensions of the texture.
-	 * @param x The x-coordinate of the center of the object.
+	 * @param parent
 	 * @param y The y-coordinate of the center of the object.
 	 * @param visible Sets if the object is visible by default.
+	 * @param x The x-coordinate of the center of the object.
 	 */
-	public RenderedObject(double x, double y, boolean visible, boolean collidable) {
+	public RenderedObject(Room parent, double y, boolean visible, boolean collidable, double x) {
 		Vector2D p0 = new Vector2D(x - texture.getWidth()/2.0, y - texture.getHeight()/2.0);
 		Vector2D p1 = new Vector2D(p0.x + texture.getWidth(), p0.y + texture.getHeight());
+		this.parent = parent;
 		this.renderBox = new Rectangle(p0, p1);
 		this.visible = visible;
 		this.collidable = collidable;
@@ -72,7 +68,8 @@ public class RenderedObject implements Renderable, Collidable {
 	 * @param visible Sets if the object is visible by default.
 	 * @param collidable Sets if the object is collidable by default.
 	 */
-	public RenderedObject(double x, double y, int sizeX, int sizeY, boolean visible, boolean collidable) {
+	public RenderedObject(Room parent, double x, double y, int sizeX, int sizeY, boolean visible, boolean collidable) {
+		this.parent = parent;
 		Vector2D p0 = new Vector2D(x - sizeX/2.0, y - sizeY/2.0);
 		Vector2D p1 = new Vector2D(x + sizeX/2.0, y + sizeY/2.0);
 		this.renderBox = new Rectangle(p0, p1);
@@ -132,7 +129,7 @@ public class RenderedObject implements Renderable, Collidable {
 
 		if (this.texture == null || GameAreaPanel.SHOW_DEBUG) {
 			Color oldColor = g.getColor();
-			// Gets the screen position from the world position
+			// Gets the screen position from world position
 			Vector2D drawPos;
 			Vector2D sizeRenderBox = renderBox.size();
 			g.setColor(Color.BLUE);

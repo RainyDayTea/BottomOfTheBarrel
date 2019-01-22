@@ -4,6 +4,7 @@ import framework.geom.Circle;
 import framework.geom.Rectangle;
 import framework.geom.Vector2D;
 import game.GameFrame;
+import map.Room;
 
 import java.awt.*;
 
@@ -21,8 +22,9 @@ public class MovableObject extends RenderedObject {
 	private int maxSpeed;
 	// The object's acceleration. This is added to the object's speed every frame.
 	private Vector2D accel;
-
+	// The base used for exponential speed decay (pseudo-friction)
 	private static final float FRICTION = 0.8f;
+	// IF false, friction will not be acted on the object.
 	private boolean hasFriction;
 
 	/**
@@ -34,12 +36,13 @@ public class MovableObject extends RenderedObject {
 	 * @param maxSpeed The max speed of the object.
 	 * @param collidable Sets if the object is initially collidable.
 	 */
-	public MovableObject(double x, double y, int sizeX, int sizeY, int maxSpeed, boolean collidable) {
-		super(x, y, sizeX, sizeY, true, collidable);
+	public MovableObject(Room parent, double x, double y, int sizeX, int sizeY, int maxSpeed, boolean collidable) {
+		super(parent, x, y, sizeX, sizeY, true, collidable);
 		this.speed = new Vector2D();
 		this.accel = new Vector2D();
 		this.maxSpeed = maxSpeed;
 		this.hasFriction = false;
+		this.setHitbox(new Circle(x, y, sizeX/2));
 	}
 
 	/**
