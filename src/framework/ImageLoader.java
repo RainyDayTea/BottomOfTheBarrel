@@ -30,6 +30,7 @@ public class ImageLoader {
 			map.put("Grass1", ImageIO.read(new File("img/grass1.png")));
 			map.put("Grass2", ImageIO.read(new File("img/grass2.png")));
 			map.put("Bullet", ImageIO.read(new File("img/bullet.png")));
+			map.put("Barrel", ImageIO.read(new File("img/barrel.png")));
 		} catch(IOException exc) {
 			exc.printStackTrace();
 		}

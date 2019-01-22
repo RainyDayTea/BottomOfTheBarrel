@@ -11,8 +11,8 @@ import java.util.ArrayList;
 
 public class Door extends RenderedObject {
 
-	public Door(double x, double y, int sizeX, int sizeY) {
-		super(x, y, sizeX, sizeY, true, true);
+	public Door(Room parent, double x, double y, int sizeX, int sizeY) {
+		super(parent, x, y, sizeX, sizeY, true, true);
 	}
 
 	@Override

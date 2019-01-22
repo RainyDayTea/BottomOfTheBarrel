@@ -40,13 +40,11 @@ public class GameAreaPanel extends JPanel {
 		/* ----- Load all images ----- */
 		ImageLoader.loadAll();
 
-		/* ----- Initialize the player ----- */
-		player = new Player(0, 0, 50, 50, 10, keyListener, mouseListener);
 
-
-		// Initialize the environment and add the entity to it
+		// Initialize the environment and add the player to it
 		Rectangle roomBounds = new Rectangle(-448, -448, 448, 448);
 		Room startingRoom = new Room(dungeon, roomBounds);
+		player = new Player(startingRoom, 0, 0, 50, 50, 10, keyListener, mouseListener);
 		startingRoom.place(player, true);
 		dungeon.addRoom(0, 0, startingRoom);
 

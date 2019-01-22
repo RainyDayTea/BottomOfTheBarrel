@@ -20,8 +20,8 @@ public class Projectile extends MovableObject {
 	// The stats of the projectile
 	Statistics stats;
 
-	public Projectile(double x, double y, int radius, Vector2D speed, Statistics stats, boolean friendly) {
-		super(x, y, radius, radius, 20, false);
+	public Projectile(Room parent, double x, double y, int radius, Vector2D speed, Statistics stats, boolean friendly) {
+		super(parent, x, y, radius, radius, 20, false);
 		this.friendly = friendly;
 		this.stats = stats;
 		this.setSpeed(speed);
@@ -38,15 +38,18 @@ public class Projectile extends MovableObject {
 
 	@Override
 	public void onIntersect(Room room, RenderedObject other) {
-		// If the other object is not a character or matches projectile type (Friendly), disregard collision
-		if (!(other instanceof Character)) return;
-		if (this.friendly && other instanceof Player) return;
-		if ((!this.friendly) && other instanceof Enemy) return;
-		Character character = (Character) other;
+		System.out.println(other);
+		if (this == other) return;
+		// If the other object matches projectile type (Friendly), disregard collision
+		if (other instanceof Character) {
+			if (this.friendly && other instanceof Player) return;
+			if ((!this.friendly) && other instanceof Enemy) return;
+			Character character = (Character) other;
 
-		// Don't take damage if character is invulnerable
-		if (!character.isInvulnerable()) {
-			character.getStats().takeDamage(this.stats.getDamage());
+			// Don't take damage if character is invulnerable
+			if (!character.isInvulnerable()) {
+				character.getStats().takeDamage(this.stats.getDamage());
+			}
 		}
 		room.remove(this);
 	}

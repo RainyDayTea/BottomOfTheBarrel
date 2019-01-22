@@ -1,6 +1,7 @@
 package framework;
 
 import framework.geom.*;
+import map.Room;
 
 public abstract class Character extends MovableObject {
 
@@ -8,8 +9,8 @@ public abstract class Character extends MovableObject {
     private boolean invulnerable;
     private Statistics stats;
 
-    public Character(double x, double y, int sizeX, int sizeY, int maxSpeed) {
-        super(x, y, sizeX, sizeY, maxSpeed, false);
+    public Character(Room parent, double x, double y, int sizeX, int sizeY, int maxSpeed) {
+        super(parent, x, y, sizeX, sizeY, maxSpeed, false);
         this.setInvulnerable(false);
         this.setName(this.hashCode() + "");
         this.setStats(stats);
