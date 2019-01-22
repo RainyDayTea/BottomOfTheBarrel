@@ -85,35 +85,9 @@ public class GameFrame extends JFrame {
         decPanel.add(mainPanel);
         //add the main panel to the frame
         this.add(decPanel);
-        this.setVisible(true);
         //Start the game loop in a separate thread
-
-        Thread t = new Thread(new Runnable() {
-            public void run() {
-                step();
-            }
-        }); //start the gameLoop
-        if (gameState == true) {
-            gamePanel = new GameAreaPanel(keyListener, mouseListener);
-            this.add(gamePanel);
-            t.start();
-        }
-
         this.setVisible(true);
     } //End of Constructor
-
-    // The method to be called every frame
-    public void step() {
-
-        while (true) {
-            this.repaint();
-            try {
-                Thread.sleep(GameAreaPanel.STEP_DELAY);
-            } catch (Exception exc) {
-                exc.printStackTrace();
-            }
-        }
-    }
 
     //INNER CLASS - Over ride Paint Component for JPANEL
     public class DecoratedPanel extends JPanel {
