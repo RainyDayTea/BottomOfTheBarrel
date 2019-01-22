@@ -2,7 +2,7 @@ package framework;
 
 public class Statistics {
     private int maxHP;
-    private int currHP = maxHP;
+    private int currHP;
     private int damage;
 
     public Statistics(int maxHP, int damage){
@@ -39,5 +39,10 @@ public class Statistics {
 
     public void setDamage(int damage) {
         this.damage = damage;
+    }
+
+    public void takeDamage(int dmg) {
+        this.currHP -= dmg;
+        this.currHP = Math.max(0, currHP);
     }
 }

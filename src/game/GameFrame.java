@@ -1,33 +1,15 @@
 package game;
 
 /**
- * This template can be used as reference or a starting point
- * for your final summative project
+ * Class for the JFrame that contains the game. Based off of Mr. Mangat's template.
+ * This class contains the main method.
  *
- * @author Mangat, edited by Jake Zhao
+ * @author Mr. Mangat, Jake Zhao
  **/
 
 //Graphics &GUI imports
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-import java.awt.*;
-import java.util.ArrayList;
-import game.StartingFrameTwo.DecoratedPanel;
-import game.StartingFrameTwo.StartButtonListener;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
 // Project framework import
-
 import framework.*;
 
 public class GameFrame extends JFrame {
@@ -38,7 +20,7 @@ public class GameFrame extends JFrame {
 
 	GameFrame() {
 
-		super("BOTTOM OF THE BARREL");
+		super("Bottom of the Barrel");
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(WIDTH, HEIGHT);
@@ -71,7 +53,7 @@ public class GameFrame extends JFrame {
 			this.repaint();
 			try {
 				Thread.sleep(GameAreaPanel.STEP_DELAY);
-			} catch (Exception exc) {exc.printStackTrace();}  //delay
+			} catch (Exception exc) {exc.printStackTrace();}
 		}
 	}
 

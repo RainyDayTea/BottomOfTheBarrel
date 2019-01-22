@@ -4,10 +4,12 @@ import framework.*;
 import framework.geom.Circle;
 import framework.geom.Rectangle;
 import framework.geom.Vector2D;
-import player.Player;
+import entity.Player;
+import map.Dungeon;
+import map.Room;
+
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 
 public class GameAreaPanel extends JPanel {
 
@@ -21,9 +23,10 @@ public class GameAreaPanel extends JPanel {
 	private long currTime = 0;
 	// The UNIX timestamp at which the game started.
 	private final long startedTime = System.nanoTime() / 1000000;
-
+	// The entity object.
 	private Player player;
-	private Room room;
+	// The current room.
+	private Dungeon dungeon;
 
 	private PlayerKeyListener keyListener;
 	private PlayerMouseListener mouseListener;
@@ -31,30 +34,23 @@ public class GameAreaPanel extends JPanel {
 	public GameAreaPanel(PlayerKeyListener keyListener, PlayerMouseListener mouseListener) {
 		this.keyListener = keyListener;
 		this.mouseListener = mouseListener;
+		this.dungeon = new Dungeon(this);
 		this.requestFocusInWindow();
 
-		// Initialize the player
+		/* ----- Load all images ----- */
+		ImageLoader.loadAll();
+
+		/* ----- Initialize the player ----- */
 		player = new Player(0, 0, 50, 50, 10, keyListener, mouseListener);
 
 
-		// Initialize the environment and add the player to it
-		Rectangle roomBounds = new Rectangle(-400, -400, 400, 400);
-		this.room = new Room(this, roomBounds);
-		room.place(player, false);
+		// Initialize the environment and add the entity to it
+		Rectangle roomBounds = new Rectangle(-448, -448, 448, 448);
+		Room startingRoom = new Room(dungeon, roomBounds);
+		startingRoom.place(player, true);
+		dungeon.addRoom(0, 0, startingRoom);
 
-		// Test: Spawn a whole bunch of objects with random motion
-		for (int i = 0; i < 50; i++) {
-			// Generate a random position inside the room
-			int xPos = (int) (Math.random() * roomBounds.pos2.x - roomBounds.pos2.x/2);
-			int yPos = (int) (Math.random() * roomBounds.pos2.y - roomBounds.pos2.y/2);
-			double xSpeed = Math.random() - 0.5;
-			double ySpeed = Math.random() - 0.5;
-			MovableObject obj = new MovableObject(0, 0, 25, 25, 10, true);
-			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
-			// Give the objects a circular hitbox
-			obj.setHitbox(new Circle(0, 0, 12.5));
-			room.place(obj, true);
-		}
+
 	}
 
 	public void paintComponent(Graphics g) {
@@ -67,7 +63,7 @@ public class GameAreaPanel extends JPanel {
 		currTime = System.nanoTime() / 1000000 - startedTime;
 
 		/* ----- Update the room ---- */
-		room.update(g, deltaTime / (double) STEP_DELAY);
+		dungeon.getCurrentRoom().update(g, deltaTime / (double) STEP_DELAY);
 
 		/* ----- Print debug info on top of everything ---- */
 		if (SHOW_DEBUG) {
@@ -76,10 +72,10 @@ public class GameAreaPanel extends JPanel {
 			g.drawString("Frame time: " + deltaTime + "ms", 0, 12);
 			g.drawString("Game time: " + currTime + "ms", 0, 24);
 			g.drawString("Pressed keys: " + player.getKeyListener().getPressedKeys(), 0, 36);
+			g.drawString("Room num (row, col): " + dungeon.getRow() + ", " + dungeon.getCol(), 0, 48);
 			g.drawString("x: " + player.getPosition().x, 700, 400);
 			g.drawString("y: " + player.getPosition().y, 700, 412);
 			g.setColor(oldColor);
-			g.setColor(Color.ORANGE);
 		}
 	}
 
@@ -89,14 +85,6 @@ public class GameAreaPanel extends JPanel {
 
 	public void setPlayer(Player player) {
 		this.player = player;
-	}
-
-	public Room getRoom() {
-		return room;
-	}
-
-	public void setRoom(Room room) {
-		this.room = room;
 	}
 
 	public long getDeltaTime() { return deltaTime; }

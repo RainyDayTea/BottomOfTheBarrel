@@ -2,24 +2,24 @@ package framework;
 
 import framework.geom.*;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-
 public abstract class Character extends MovableObject {
 
     private String name;
     private boolean invulnerable;
     private Statistics stats;
-    public static final BufferedImage defaultTexture = null;
 
     public Character(double x, double y, int sizeX, int sizeY, int maxSpeed) {
-        super(x, y, sizeX, sizeY, maxSpeed, true);
+        super(x, y, sizeX, sizeY, maxSpeed, false);
         this.setInvulnerable(false);
         this.setName(this.hashCode() + "");
         this.setStats(stats);
+        this.setHasFriction(true);
         Circle hitbox = new Circle(x, y + 10, Math.min(sizeX, sizeY)/2.0);
         super.setHitbox(hitbox);
+    }
+
+    public void die() {
+
     }
 
     public void setName(String name){
@@ -34,9 +34,8 @@ public abstract class Character extends MovableObject {
         return invulnerable;
     }
 
-    public boolean setInvulnerable(boolean invulnerable) {
+    public void setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
-        return this.invulnerable;
     }
 
     public Statistics getStats() {

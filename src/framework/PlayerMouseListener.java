@@ -25,12 +25,14 @@ public class PlayerMouseListener implements MouseListener, MouseMotionListener {
 	public void mousePressed(MouseEvent e) {
 		if (e.getButton() == 1) lmbDown = true;
 		if (e.getButton() == 2) rmbDown = true;
+		this.position = new Vector2D(e.getX(), e.getY() - 25);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		if (e.getButton() == 1) lmbDown = false;
 		if (e.getButton() == 2) rmbDown = false;
+		this.position = new Vector2D(e.getX(), e.getY() - 25);
 	}
 
 	@Override
@@ -44,6 +46,18 @@ public class PlayerMouseListener implements MouseListener, MouseMotionListener {
 
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		this.position = new Vector2D(e.getXOnScreen(), e.getYOnScreen());
+		this.position = new Vector2D(e.getX(), e.getY() - 25);
+	}
+
+	public Vector2D getPosition() {
+		return new Vector2D(position.x, position.y);
+	}
+
+	public boolean isLmbDown() {
+		return lmbDown;
+	}
+
+	public boolean isRmbDown() {
+		return rmbDown;
 	}
 }
