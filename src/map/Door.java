@@ -2,7 +2,10 @@ package map;
 
 import entity.Player;
 import framework.RenderedObject;
+import framework.geom.Vector2D;
+import game.GameFrame;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
@@ -33,5 +36,15 @@ public class Door extends RenderedObject {
 			}
 			if (returnedObjects == null) throw new NullPointerException("Door.onIntersect(): Returned objects do not exist.");
 		}
+	}
+
+	@Override
+	public void draw(Graphics g, Vector2D offset) {
+		Vector2D drawPos = new Vector2D(this.getRenderBox().pos).add(-offset.x + GameFrame.WIDTH / 2, -offset.y + GameFrame.HEIGHT / 2);
+		Vector2D size = this.getRenderBox().size();
+		Color oldColor = g.getColor();
+		g.setColor(new Color(0x2f0f00));
+		g.fillRect((int) drawPos.x, (int) drawPos.y, (int) size.x, (int) size.y);
+		g.setColor(oldColor);
 	}
 }

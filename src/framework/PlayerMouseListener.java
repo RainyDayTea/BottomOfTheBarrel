@@ -52,4 +52,12 @@ public class PlayerMouseListener implements MouseListener, MouseMotionListener {
 	public Vector2D getPosition() {
 		return new Vector2D(position.x, position.y);
 	}
+
+	public boolean isLmbDown() {
+		return lmbDown;
+	}
+
+	public boolean isRmbDown() {
+		return rmbDown;
+	}
 }

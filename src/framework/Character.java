@@ -13,8 +13,13 @@ public abstract class Character extends MovableObject {
         this.setInvulnerable(false);
         this.setName(this.hashCode() + "");
         this.setStats(stats);
+        this.setHasFriction(true);
         Circle hitbox = new Circle(x, y + 10, Math.min(sizeX, sizeY)/2.0);
         super.setHitbox(hitbox);
+    }
+
+    public void die() {
+
     }
 
     public void setName(String name){
@@ -29,9 +34,8 @@ public abstract class Character extends MovableObject {
         return invulnerable;
     }
 
-    public boolean setInvulnerable(boolean invulnerable) {
+    public void setInvulnerable(boolean invulnerable) {
         this.invulnerable = invulnerable;
-        return this.invulnerable;
     }
 
     public Statistics getStats() {

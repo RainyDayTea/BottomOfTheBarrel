@@ -62,12 +62,12 @@ public class Room {
 			// Generate a random position inside the room
 			int xPos = (int) (Math.random() * bounds.pos2.x - bounds.pos2.x/2);
 			int yPos = (int) (Math.random() * bounds.pos2.y - bounds.pos2.y/2);
-			double xSpeed = Math.random() - 0.5;
-			double ySpeed = Math.random() - 0.5;
-			MovableObject obj = new MovableObject(xPos, yPos, 25, 25, 5, true);
+			double xSpeed = Math.random() * 3 - 1.5;
+			double ySpeed = Math.random() * 3 - 1.5;
+			Projectile obj = new Projectile(xPos, yPos, 25, new Vector2D(xSpeed, ySpeed), null, true);
 			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
 			// Give the objects a circular hitbox
-			//obj.setHitbox(new Circle(xPos, yPos, 12.5));
+			obj.setHitbox(new Circle(xPos, yPos, 8));
 			this.place(obj, true);
 		}
 	}
@@ -117,11 +117,24 @@ public class Room {
 	public void update(Graphics g, double timescale) {
 		Vector2D playerPos = new Vector2D();
 		/* ----- Movement & physics part is done here ----- */
-		for (RenderedObject obj : objects) {
+		for (int i = 0; i < objects.size(); i++) {
+			RenderedObject obj = objects.get(i);
 			// Update the entity according to position.
 			if (obj instanceof Player) {
-				((Player) obj).updateMovement(timescale);
+				Player player = (Player) obj;
+				player.updateMovement(timescale);
 				playerPos = obj.getPosition();
+
+				// Player logic in here
+				if (player.getMouseListener().isLmbDown()) {
+					if (System.currentTimeMillis() - player.getLastShot() > 300) {
+						player.setLastShot(System.currentTimeMillis());
+						Vector2D projSpeed = new Vector2D(player.getMouseListener().getPosition()).sub(GameFrame.WIDTH/2, GameFrame.HEIGHT/2);
+						projSpeed.getUnitVector().scale(15);
+						Projectile playerProjectile = new Projectile((int) playerPos.x, (int) playerPos.y, 16, projSpeed, null, true);
+						this.place(playerProjectile, true);
+					}
+				}
 			}
 			// Attempt to move all physics objects
 			if (obj instanceof MovableObject) {

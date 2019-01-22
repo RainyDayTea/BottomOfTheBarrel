@@ -40,4 +40,9 @@ public class Statistics {
     public void setDamage(int damage) {
         this.damage = damage;
     }
+
+    public void takeDamage(int dmg) {
+        this.currHP -= dmg;
+        this.currHP = Math.max(0, currHP);
+    }
 }

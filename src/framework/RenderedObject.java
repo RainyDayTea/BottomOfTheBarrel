@@ -6,6 +6,7 @@ import framework.geom.Shape;
 import framework.geom.Vector2D;
 import game.GameAreaPanel;
 import game.GameFrame;
+import map.Dungeon;
 import map.Room;
 import org.w3c.dom.css.Rect;
 
@@ -44,6 +45,7 @@ public class RenderedObject implements Renderable, Collidable {
 
 	private boolean collidable;
 	private Shape hitbox;
+	private long lastCollision;
 
 	/**
 	 * Constructs a RenderedObject centered at (x, y) with the dimensions of the texture.
@@ -58,6 +60,7 @@ public class RenderedObject implements Renderable, Collidable {
 		this.visible = visible;
 		this.collidable = collidable;
 		this.hitbox = new Rectangle(p0, p1);
+		this.lastCollision = System.currentTimeMillis();
 	}
 
 	/**

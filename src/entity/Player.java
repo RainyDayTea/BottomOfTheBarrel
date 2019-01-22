@@ -27,6 +27,7 @@ public class Player extends Character {
 	private BufferedImage[] running;
 	private int speed;
 	private String weapon;
+	private long lastShot;
 
 	public Player(double x, double y, int sizeX, int sizeY, int maxSpeed, PlayerKeyListener kl, PlayerMouseListener ml) {
 		super(x, y, sizeX, sizeY, maxSpeed);
@@ -36,6 +37,7 @@ public class Player extends Character {
 		this.setTexture("Player");
 		this.animator = new ImageAnimator(texture, 4, 4, 64, 64);
 		this.lastAnimLocation = this.getHitbox().getCenter();
+		this.lastShot = System.currentTimeMillis();
 	}
 
 	/**
@@ -67,6 +69,10 @@ public class Player extends Character {
 			animator.setPos(1, animator.getCol());
 		}
 		this.setAccel(playerAccel);
+
+		if (mouseListener.isLmbDown()) {
+
+		}
 	}
 
 	@Override
@@ -116,5 +122,13 @@ public class Player extends Character {
 
 	public void setMouseListener(PlayerMouseListener mouseListener) {
 		this.mouseListener = mouseListener;
+	}
+
+	public long getLastShot() {
+		return lastShot;
+	}
+
+	public void setLastShot(long lastShot) {
+		this.lastShot = lastShot;
 	}
 }
