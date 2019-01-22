@@ -1,5 +1,6 @@
 package map;
 
+import entity.Enemy;
 import entity.Projectile;
 import framework.*;
 import framework.geom.*;
@@ -85,18 +86,15 @@ public class Room {
 			this.place(doors[i], true);
 		}
 
-		// Test: Spawn a whole bunch of objects with random motion
-		for (int i = 0; i < 0; i++) {
-			// Generate a random position inside the room
+		// Spawn enemies based on their manhattan dist from spawn
+		int manhattanDistFromSpawn = 0;
+		manhattanDistFromSpawn = Math.abs(this.parent.getCol()) + Math.abs(this.parent.getRow());
+		for (int i = 0; i < manhattanDistFromSpawn; i++) {
 			int xPos = (int) (Math.random() * bounds.pos2.x - bounds.pos2.x/2);
 			int yPos = (int) (Math.random() * bounds.pos2.y - bounds.pos2.y/2);
-			double xSpeed = Math.random() * 3 - 1.5;
-			double ySpeed = Math.random() * 3 - 1.5;
-			Projectile obj = new Projectile(this, xPos, yPos, 25, new Vector2D(xSpeed, ySpeed), null, true);
-			obj.setSpeed(new Vector2D(xSpeed, ySpeed));
-			// Give the objects a circular hitbox
-			obj.setHitbox(new Circle(xPos, yPos, 8));
-			this.place(obj, true);
+			Statistics enemyStats = new Statistics(3, 1);
+			Enemy enemy = new Enemy(this, xPos, yPos, 32, 32, 10, enemyStats);
+			this.place(enemy, true);
 		}
 	}
 
@@ -177,11 +175,12 @@ public class Room {
 
 				// Player logic in here
 				if (player.getMouseListener().isLmbDown()) {
-					if (System.currentTimeMillis() - player.getLastShot() > 300) {
+					if (System.currentTimeMillis() - player.getLastShot() > 200) {
 						player.setLastShot(System.currentTimeMillis());
 						Vector2D projSpeed = new Vector2D(player.getMouseListener().getPosition()).sub(GameFrame.WIDTH/2, GameFrame.HEIGHT/2);
 						projSpeed.getUnitVector().scale(15);
-						Projectile playerProjectile = new Projectile(this, (int) playerPos.x, (int) playerPos.y, 16, projSpeed, null, true);
+						Statistics projStats = new Statistics(0, 3);
+						Projectile playerProjectile = new Projectile(this, (int) playerPos.x, (int) playerPos.y, 16, projSpeed, projStats, true);
 						this.place(playerProjectile, true);
 					}
 				}
@@ -189,6 +188,29 @@ public class Room {
 			// Attempt to move all physics objects
 			if (obj instanceof MovableObject) {
 				((MovableObject) obj).move(timescale);
+			}
+		}
+
+		for (int i = 0; i < objects.size(); i++) {
+			RenderedObject obj = objects.get(i);
+			if (obj instanceof Enemy) {
+				Enemy enemy = (Enemy) obj;
+				if (enemy.getStats().getCurrHP() <= 0) this.remove(enemy);
+				if (System.currentTimeMillis() - enemy.getLastAttack() > enemy.getAttackDelay()) {
+					enemy.setLastAttack(System.currentTimeMillis());
+					Vector2D projSpeed = new Vector2D(playerPos).sub(enemy.getPosition());
+					Statistics bulletStats = new Statistics(0, 1);
+					projSpeed = projSpeed.getUnitVector().scale(5);
+					Projectile enemyProjectile = new Projectile(this, (int) enemy.getPosition().x, (int) enemy.getPosition().y, 16, projSpeed, bulletStats, false);
+					this.place(enemyProjectile, true);
+				}
+				if (System.currentTimeMillis() - enemy.getLastMove() > enemy.getMoveDelay()) {
+					enemy.setLastMove(System.currentTimeMillis());
+					double speedX = -8 + Math.random() * 16;
+					double speedY = -8 + Math.random() * 16;
+					Vector2D moveSpeed = new Vector2D(speedX, speedY);
+					enemy.setSpeed(moveSpeed);
+				}
 			}
 		}
 		// Clears and re-updates the quadtree

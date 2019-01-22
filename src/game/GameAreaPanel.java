@@ -1,9 +1,7 @@
 package game;
 
 import framework.*;
-import framework.geom.Circle;
 import framework.geom.Rectangle;
-import framework.geom.Vector2D;
 import entity.Player;
 import map.Dungeon;
 import map.Room;
@@ -16,7 +14,7 @@ public class GameAreaPanel extends JPanel {
 	// The time waited between calls of paintComponent(), in milliseconds.
 	public static final int STEP_DELAY = 16;
 	// If true, draws debug info on screen.
-	public static final boolean SHOW_DEBUG = true;
+	public static final boolean SHOW_DEBUG = false;
 	// The elapsed time between calls of paintComponent(), in milliseconds.
 	private long deltaTime = 0;
 	// The old time used to calculate deltaTime.

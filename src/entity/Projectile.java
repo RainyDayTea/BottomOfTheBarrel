@@ -38,7 +38,7 @@ public class Projectile extends MovableObject {
 
 	@Override
 	public void onIntersect(Room room, RenderedObject other) {
-		System.out.println(other);
+		//System.out.println(other);
 		if (this == other) return;
 		// If the other object matches projectile type (Friendly), disregard collision
 		if (other instanceof Character) {

@@ -26,6 +26,7 @@ public class ImageLoader {
 		try {
 			// Load textures into the hash map
 			map.put("Player", ImageIO.read(new File("img/cowboy_spritesheet.png")));
+			map.put("Enemy", ImageIO.read(new File("img/enemy_sprite.png")));
 			map.put("Ground", ImageIO.read(new File("img/ground.png")));
 			map.put("Grass1", ImageIO.read(new File("img/grass1.png")));
 			map.put("Grass2", ImageIO.read(new File("img/grass2.png")));

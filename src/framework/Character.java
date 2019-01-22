@@ -35,7 +35,7 @@ public abstract class Character extends MovableObject {
             healthBarPos.add(-offset.x + GameFrame.WIDTH / 2, -offset.y + GameFrame.HEIGHT / 2);
             double percentHealthFull = 0;
             if (this.getStats().getMaxHP() != 0) {
-                percentHealthFull = this.stats.getCurrHP() / (double) this.getStats().getMaxHP();
+                percentHealthFull = Math.max(this.stats.getCurrHP(), 0) / (double) this.getStats().getMaxHP();
             }
             int healthBarWidth = (int) this.getRenderBox().size().x;
             // Draw red bar

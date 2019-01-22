@@ -71,9 +71,6 @@ public class Player extends Character {
 		}
 		this.setAccel(playerAccel);
 
-		if (mouseListener.isLmbDown()) {
-
-		}
 	}
 
 	@Override
