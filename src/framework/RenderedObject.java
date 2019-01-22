@@ -4,6 +4,7 @@ import framework.geom.Circle;
 import framework.geom.Rectangle;
 import framework.geom.Shape;
 import framework.geom.Vector2D;
+import game.GameAreaPanel;
 import game.GameFrame;
 import map.Room;
 import org.w3c.dom.css.Rect;
@@ -14,6 +15,7 @@ import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * The superclass for all renderable objects. All objects that
@@ -125,24 +127,26 @@ public class RenderedObject implements Renderable, Collidable {
 		// Prevents drawing if the object is invisible.
 		if (!this.isVisible()) return;
 
-		Color oldColor = g.getColor();
-		// Gets the screen position from the world position
-		Vector2D drawPos;
-		Vector2D sizeRenderBox = renderBox.size();
-		g.setColor(Color.BLUE);
-		drawPos = new Vector2D(this.renderBox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
-		g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeRenderBox.x, (int) sizeRenderBox.y);
-		g.setColor(Color.CYAN);
-		if (this.hitbox instanceof Rectangle) {
-			drawPos = new Vector2D(this.hitbox.pos).add(-offset.x + GameFrame.WIDTH/2, -offset.y + GameFrame.HEIGHT/2);
-			Vector2D sizeHitbox = ((Rectangle) this.hitbox).size();
-			g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeHitbox.x, (int) sizeHitbox.y);
-		} else if (this.hitbox instanceof Circle) {
-			int radius = (int) Math.round(((Circle) this.hitbox).radius);
-			drawPos = new Vector2D(this.hitbox.pos).add(-offset.x + GameFrame.WIDTH/2 - radius, -offset.y + GameFrame.HEIGHT/2 - radius);
-			g.drawOval((int) drawPos.x, (int) drawPos.y, radius*2, radius*2);
+		if (this.texture == null || GameAreaPanel.SHOW_DEBUG) {
+			Color oldColor = g.getColor();
+			// Gets the screen position from the world position
+			Vector2D drawPos;
+			Vector2D sizeRenderBox = renderBox.size();
+			g.setColor(Color.BLUE);
+			drawPos = new Vector2D(this.renderBox.pos).add(-offset.x + GameFrame.WIDTH / 2, -offset.y + GameFrame.HEIGHT / 2);
+			g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeRenderBox.x, (int) sizeRenderBox.y);
+			g.setColor(Color.CYAN);
+			if (this.hitbox instanceof Rectangle) {
+				drawPos = new Vector2D(this.hitbox.pos).add(-offset.x + GameFrame.WIDTH / 2, -offset.y + GameFrame.HEIGHT / 2);
+				Vector2D sizeHitbox = ((Rectangle) this.hitbox).size();
+				g.drawRect((int) drawPos.x, (int) drawPos.y, (int) sizeHitbox.x, (int) sizeHitbox.y);
+			} else if (this.hitbox instanceof Circle) {
+				int radius = (int) Math.round(((Circle) this.hitbox).radius);
+				drawPos = new Vector2D(this.hitbox.pos).add(-offset.x + GameFrame.WIDTH / 2 - radius, -offset.y + GameFrame.HEIGHT / 2 - radius);
+				g.drawOval((int) drawPos.x, (int) drawPos.y, radius * 2, radius * 2);
+			}
+			g.setColor(oldColor);
 		}
-		g.setColor(oldColor);
 	}
 
 	/**
@@ -194,7 +198,7 @@ public class RenderedObject implements Renderable, Collidable {
 			mf.a = this;
 			mf.b = other;
 			if (mf.a != null && mf.b != null) {
-				// Don't worry if the objects are not collidable, this is handled in the called method
+				// Don't worry if the objects are not collidable, this is handled in the method
 				if (Collisions.circVsCirc(mf)) {
 					Collisions.resolve(mf.a, mf.b, mf.normal);
 				}
